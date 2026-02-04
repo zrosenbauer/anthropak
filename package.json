@@ -1,0 +1,17 @@
+{
+  "name": "anthropak-root",
+  "private": true,
+  "scripts": {
+    "build": "turbo build",
+    "build:bin": "turbo build:bin",
+    "build:all": "turbo build:all",
+    "generate:formula": "./scripts/generate-formula.ts",
+    "dev": "turbo dev",
+    "typecheck": "turbo typecheck",
+    "clean": "turbo clean"
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4"
+  },
+  "packageManager": "pnpm@10.13.1"
+}

@@ -1,0 +1,44 @@
+{
+  "name": "anthropak",
+  "version": "0.1.0",
+  "description": "CLI tool to manage plugin dependencies for Claude Code plugins",
+  "type": "module",
+  "bin": {
+    "anthropak": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "generate:assets": "./scripts/generate-assets.ts",
+    "prebuild": "pnpm generate:assets",
+    "build": "tsdown",
+    "build:bin": "./scripts/build-binaries.ts",
+    "build:all": "pnpm build && pnpm build:bin",
+    "dev": "tsdown --watch",
+    "typecheck": "tsc --build",
+    "clean": "rimraf dist bin src/.generated scripts/*.tsbuildinfo"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "plugins",
+    "dependencies"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@clack/prompts": "^1.0.0",
+    "liquidjs": "^10.24.0",
+    "yargs": "^17.7.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.10",
+    "@types/yargs": "^17.0.33",
+    "rimraf": "^6.1.2",
+    "tsdown": "^0.9.3",
+    "typescript": "^5.7.3"
+  }
+}
