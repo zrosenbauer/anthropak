@@ -11,8 +11,8 @@
  */
 export function safeParse<T>(content: string, defaultValue: T): T {
   try {
-    return JSON.parse(content) as T
+    return JSON.parse(content) as T;
   } catch {
-    return defaultValue
+    return defaultValue;
   }
 }

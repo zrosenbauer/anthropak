@@ -1,12 +1,12 @@
-import * as p from '@clack/prompts'
+import * as p from "@clack/prompts";
 
-const MIN_NODE_VERSION = 18
+const MIN_NODE_VERSION = 18;
 
 /**
  * Check if running under Bun runtime
  */
 function isBunRuntime(): boolean {
-  return typeof process.versions.bun !== 'undefined'
+  return typeof process.versions.bun !== "undefined";
 }
 
 /**
@@ -16,16 +16,16 @@ function isBunRuntime(): boolean {
 export function checkNodeVersion(): void {
   // Bun has full ESM support, skip Node version check
   if (isBunRuntime()) {
-    return
+    return;
   }
 
-  const currentVersion = process.versions.node
-  const majorVersion = parseInt(currentVersion.split('.')[0], 10)
+  const currentVersion = process.versions.node;
+  const majorVersion = parseInt(currentVersion.split(".")[0], 10);
 
   if (majorVersion < MIN_NODE_VERSION) {
     p.log.error(
-      `Node.js ${MIN_NODE_VERSION}+ is required for ESM support. Current version: ${currentVersion}`
-    )
-    process.exit(1)
+      `Node.js ${MIN_NODE_VERSION}+ is required for ESM support. Current version: ${currentVersion}`,
+    );
+    process.exit(1);
   }
 }

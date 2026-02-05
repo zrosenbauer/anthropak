@@ -2,27 +2,27 @@
   "name": "@anthropak/hook",
   "version": "0.1.0",
   "description": "Hook scripts for Claude Code plugin dependency management",
+  "files": [
+    "dist"
+  ],
   "type": "module",
   "exports": {
     ".": {
       "import": "./dist/anthropak.mjs"
     }
   },
-  "files": [
-    "dist"
-  ],
   "scripts": {
     "build": "tsdown",
     "dev": "tsdown --watch",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
+  "dependencies": {
+    "confbox": "^0.2.2"
+  },
   "devDependencies": {
     "@types/node": "^24.10.10",
     "tsdown": "^0.9.3",
     "typescript": "^5.7.3"
-  },
-  "dependencies": {
-    "confbox": "^0.2.2"
   }
 }

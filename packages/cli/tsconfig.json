@@ -12,14 +12,7 @@
     "outDir": "./dist",
     "rootDir": "./src"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
-  "references": [
-    { "path": "./scripts" }
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "references": [{ "path": "./scripts" }]
 }

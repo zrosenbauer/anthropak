@@ -7,15 +7,15 @@
  */
 export interface PluginDependency {
   /** The plugin identifier/name */
-  plugin: string
+  plugin: string;
   /** Optional marketplace identifier */
-  marketplace?: string
+  marketplace?: string;
   /** Optional GitHub repository in "owner/repo" format */
-  github?: string
+  github?: string;
   /** Optional human-readable description */
-  description?: string
+  description?: string;
   /** Optional custom install command */
-  install?: string
+  install?: string;
 }
 
 /**
@@ -23,9 +23,9 @@ export interface PluginDependency {
  */
 export interface ParsedDependencies {
   /** Required plugin dependencies */
-  required: PluginDependency[]
+  required: PluginDependency[];
   /** Optional plugin dependencies */
-  optional: PluginDependency[]
+  optional: PluginDependency[];
 }
 
 /**
@@ -33,9 +33,9 @@ export interface ParsedDependencies {
  */
 export interface RawConfig {
   dependencies?: {
-    required?: unknown[]
-    optional?: unknown[]
-  }
+    required?: unknown[];
+    optional?: unknown[];
+  };
 }
 
 /**
@@ -43,9 +43,9 @@ export interface RawConfig {
  */
 export interface PluginInstallation {
   /** Installation scope */
-  scope: 'global' | 'project'
+  scope: "global" | "project";
   /** Project path for project-scoped installations */
-  projectPath?: string
+  projectPath?: string;
 }
 
 /**
@@ -53,7 +53,7 @@ export interface PluginInstallation {
  */
 export interface InstalledPluginsRegistry {
   /** Map of plugin keys to installations */
-  plugins: Record<string, PluginInstallation[]>
+  plugins: Record<string, PluginInstallation[]>;
 }
 
 /**
@@ -61,7 +61,7 @@ export interface InstalledPluginsRegistry {
  */
 export interface HookResponse {
   /** Optional system message to display */
-  systemMessage?: string
+  systemMessage?: string;
 }
 
 /**
@@ -69,10 +69,9 @@ export interface HookResponse {
  */
 export interface ValidationResult {
   /** Whether validation succeeded */
-  valid: boolean
+  valid: boolean;
   /** Validation errors if any */
-  errors: string[]
+  errors: string[];
   /** Parsed dependencies if valid */
-  data?: ParsedDependencies
+  data?: ParsedDependencies;
 }
-

@@ -2,7 +2,7 @@
  * @fileoverview Output formatting utilities.
  */
 
-import type { PluginDependency } from '../types.js'
+import type { PluginDependency } from "../types.js";
 
 /**
  * Generates the appropriate install command for a plugin dependency.
@@ -21,18 +21,18 @@ import type { PluginDependency } from '../types.js'
  */
 export function getInstallCommand(dep: PluginDependency): string {
   if (dep.install) {
-    return dep.install
+    return dep.install;
   }
 
   if (dep.marketplace) {
-    return `claude plugin add ${dep.plugin} --marketplace ${dep.marketplace}`
+    return `claude plugin add ${dep.plugin} --marketplace ${dep.marketplace}`;
   }
 
   if (dep.github) {
-    return `claude plugin add --git git@github.com:${dep.github}.git`
+    return `claude plugin add --git git@github.com:${dep.github}.git`;
   }
 
-  return `claude plugin add ${dep.plugin}`
+  return `claude plugin add ${dep.plugin}`;
 }
 
 /**
@@ -43,15 +43,15 @@ export function getInstallCommand(dep: PluginDependency): string {
  * @returns Array of formatted message lines
  */
 export function formatMissingDeps(missing: PluginDependency[], header: string): string[] {
-  const messages: string[] = []
+  const messages: string[] = [];
 
-  messages.push(header)
+  messages.push(header);
 
   for (const dep of missing) {
-    const desc = dep.description || ''
-    messages.push(`- **${dep.plugin}**${desc ? ` - ${desc}` : ''}`)
-    messages.push(`  \`${getInstallCommand(dep)}\``)
+    const desc = dep.description || "";
+    messages.push(`- **${dep.plugin}**${desc ? ` - ${desc}` : ""}`);
+    messages.push(`  \`${getInstallCommand(dep)}\``);
   }
 
-  return messages
+  return messages;
 }

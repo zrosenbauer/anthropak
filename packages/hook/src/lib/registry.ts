@@ -1,22 +1,19 @@
-import { existsSync, readFileSync } from 'node:fs'
-import type { InstalledPluginsRegistry, PluginInstallation } from '../types.js'
-import { safeParse } from './utils.js'
-import { DEFAULT_REGISTRY } from './constants.js'
+import { existsSync, readFileSync } from "node:fs";
+import type { InstalledPluginsRegistry, PluginInstallation } from "../types.js";
+import { safeParse } from "./utils.js";
+import { DEFAULT_REGISTRY } from "./constants.js";
 
 /**
  * Checks if a project directory is covered by an installation.
  */
 function isProjectCovered(inst: PluginInstallation, projectDir: string): boolean {
-  if (inst.scope === 'global') {
-    return true
+  if (inst.scope === "global") {
+    return true;
   }
   if (!inst.projectPath) {
-    return false
+    return false;
   }
-  return (
-    projectDir === inst.projectPath ||
-    projectDir.startsWith(inst.projectPath + '/')
-  )
+  return projectDir === inst.projectPath || projectDir.startsWith(inst.projectPath + "/");
 }
 
 /**
@@ -27,13 +24,13 @@ function isProjectCovered(inst: PluginInstallation, projectDir: string): boolean
  */
 export function loadInstalledPlugins(registryPath: string): InstalledPluginsRegistry {
   if (!existsSync(registryPath)) {
-    return DEFAULT_REGISTRY
+    return DEFAULT_REGISTRY;
   }
   try {
-    const content = readFileSync(registryPath, 'utf8')
-    return safeParse(content, DEFAULT_REGISTRY)
+    const content = readFileSync(registryPath, "utf8");
+    return safeParse(content, DEFAULT_REGISTRY);
   } catch {
-    return DEFAULT_REGISTRY
+    return DEFAULT_REGISTRY;
   }
 }
 
@@ -52,24 +49,24 @@ export function isPluginInstalled(
   installedPlugins: InstalledPluginsRegistry,
   plugin: string,
   marketplace: string | undefined,
-  projectDir: string
+  projectDir: string,
 ): boolean {
-  const plugins = installedPlugins.plugins || {}
+  const plugins = installedPlugins.plugins || {};
 
   if (marketplace) {
-    const key = `${plugin}@${marketplace}`
-    const installations = plugins[key] || []
-    return installations.some((inst) => isProjectCovered(inst, projectDir))
+    const key = `${plugin}@${marketplace}`;
+    const installations = plugins[key] || [];
+    return installations.some((inst) => isProjectCovered(inst, projectDir));
   }
 
   for (const key of Object.keys(plugins)) {
     if (key.startsWith(`${plugin}@`)) {
-      const installations = plugins[key] || []
+      const installations = plugins[key] || [];
       if (installations.some((inst) => isProjectCovered(inst, projectDir))) {
-        return true
+        return true;
       }
     }
   }
 
-  return false
+  return false;
 }

@@ -10,10 +10,6 @@
       "outputs": ["bin/**"],
       "cache": false
     },
-    "build:all": {
-      "dependsOn": ["build", "build:bin"],
-      "cache": false
-    },
     "dev": {
       "cache": false,
       "persistent": true
@@ -22,6 +18,12 @@
       "dependsOn": ["^build"]
     },
     "clean": {
+      "cache": false
+    },
+    "//#lint:fix": {
+      "cache": false
+    },
+    "//#format:fix": {
       "cache": false
     }
   }

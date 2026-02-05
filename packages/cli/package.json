@@ -2,32 +2,40 @@
   "name": "anthropak",
   "version": "0.1.0",
   "description": "CLI tool to manage plugin dependencies for Claude Code plugins",
-  "type": "module",
+  "keywords": [
+    "anthropic",
+    "claude",
+    "claude-code",
+    "cli",
+    "dependencies",
+    "plugins"
+  ],
+  "homepage": "https://github.com/zrosenbauer/anthropak#readme",
+  "bugs": {
+    "url": "https://github.com/zrosenbauer/anthropak/issues"
+  },
+  "license": "MIT",
+  "author": "Zach Rosenbauer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zrosenbauer/anthropak.git",
+    "directory": "packages/cli"
+  },
   "bin": {
     "anthropak": "./dist/cli.mjs"
   },
   "files": [
     "dist"
   ],
+  "type": "module",
   "scripts": {
-    "generate:assets": "./scripts/generate-assets.ts",
-    "prebuild": "pnpm generate:assets",
+    "build:assets": "./scripts/build-assets.ts",
+    "prebuild": "pnpm build:assets",
     "build": "tsdown",
     "build:bin": "./scripts/build-binaries.ts",
-    "build:all": "pnpm build && pnpm build:bin",
     "dev": "tsdown --watch",
     "typecheck": "tsc --build",
     "clean": "rimraf dist bin src/.generated scripts/*.tsbuildinfo"
-  },
-  "keywords": [
-    "claude",
-    "claude-code",
-    "plugins",
-    "dependencies"
-  ],
-  "license": "MIT",
-  "engines": {
-    "node": ">=18.0.0"
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0",
@@ -40,5 +48,8 @@
     "rimraf": "^6.1.2",
     "tsdown": "^0.9.3",
     "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }

@@ -4,13 +4,28 @@
   "scripts": {
     "build": "turbo build",
     "build:bin": "turbo build:bin",
-    "build:all": "turbo build:all",
-    "generate:formula": "./scripts/generate-formula.ts",
+    "build:formula": "./scripts/build-formula.ts",
+    "changeset": "changeset",
+    "clean": "turbo clean",
     "dev": "turbo dev",
+    "fix": "turbo //#lint:fix //#format:fix",
+    "format": "oxfmt --check .",
+    "format:fix": "oxfmt --write .",
+    "lint": "oxlint .",
+    "lint:fix": "oxlint --fix .",
+    "lint:readme": "find . -name 'README.md' -not -path './node_modules/*' -not -path './.changeset/*' -exec standard-readme lint {} \\;",
+    "prepare": "lefthook install",
+    "release": "changeset publish",
     "typecheck": "turbo typecheck",
-    "clean": "turbo clean"
+    "version-packages": "changeset version"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.29.8",
+    "lefthook": "^2.1.0",
+    "oxfmt": "^0.28.0",
+    "oxlint": "^1.43.0",
+    "standard-readme": "^2.0.4",
+    "standard-readme-spec": "^1.2.3",
     "turbo": "^2.4.4"
   },
   "packageManager": "pnpm@10.13.1"
