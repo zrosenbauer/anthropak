@@ -37,9 +37,9 @@ Anthropak extends from plugin dependency checking to a unified three-ecosystem v
 
 Plans:
 
-- [ ] 01-01-PLAN.md — Rebuild hook package (types, config, plugin checker, output, crash-proof entry point)
-- [ ] 01-02-PLAN.md — Rebuild CLI package (init/update/validate commands with confirmations, new schema template)
-- [ ] 01-03-PLAN.md — Replace all ternary operators with ts-pattern match() (gap closure for HARD-01)
+- [x] 01-01-PLAN.md — Rebuild hook package (types, config, plugin checker, output, crash-proof entry point)
+- [x] 01-02-PLAN.md — Rebuild CLI package (init/update/validate commands with confirmations, new schema template)
+- [x] 01-03-PLAN.md — Replace all ternary operators with ts-pattern match() (gap closure for HARD-01)
 
 ---
 
@@ -93,11 +93,11 @@ Plans:
 
 ## Progress
 
-| Phase                       | Status  | Requirements | Success Criteria |
-| --------------------------- | ------- | ------------ | ---------------- |
-| 1 - Core Rebuild            | Pending | 6            | 5                |
-| 2 - CLI Tool Dependencies   | Pending | 5            | 5                |
-| 3 - MCP Server Dependencies | Pending | 5            | 5                |
+| Phase                       | Status   | Requirements | Success Criteria |
+| --------------------------- | -------- | ------------ | ---------------- |
+| 1 - Core Rebuild            | Complete | 6            | 5                |
+| 2 - CLI Tool Dependencies   | Pending  | 5            | 5                |
+| 3 - MCP Server Dependencies | Pending  | 5            | 5                |
 
 **Total:** 3 phases, 16 requirements, 15 success criteria
 
@@ -105,12 +105,12 @@ Plans:
 
 ## Next Steps
 
-1. Execute Phase 1 plans with `/gsd:execute-phase 1`
-2. Verify Phase 1 success criteria before proceeding
+1. ~~Execute Phase 1 plans~~ ✓
+2. ~~Verify Phase 1 success criteria~~ ✓
 3. Plan Phase 2 with `/gsd:plan-phase 2`
-4. Continue to Phase 2
+4. Execute Phase 2 plans
 
 ---
 
 _Roadmap created: 2026-02-06_
-_Last updated: 2026-02-06 (Phase 1 planned — 3 plans in 2 waves, gap closure plan added)_
+_Last updated: 2026-02-06 (Phase 1 complete — all 3 plans executed, verified)_

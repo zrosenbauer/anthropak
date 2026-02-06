@@ -7,11 +7,11 @@
 
 ### Core Rebuild
 
-- [ ] **HARD-01**: All control flow uses ts-pattern instead of ternaries or nested conditionals
-- [ ] **HARD-02**: All async error handling uses es-toolkit attemptAsync instead of try-catch
-- [ ] **HARD-03**: Custom utility checks replaced with es-toolkit equivalents
-- [ ] **HARD-04**: All hook and CLI logic built from scratch with proper patterns (ts-pattern, attemptAsync, es-toolkit)
-- [ ] **HARD-05**: dependencies.yaml uses new nested schema (plugins/cli_tools/mcp_servers) with version field
+- [x] **HARD-01**: All control flow uses ts-pattern instead of ternaries or nested conditionals
+- [x] **HARD-02**: All async error handling uses es-toolkit attemptAsync instead of try-catch
+- [x] **HARD-03**: Custom utility checks replaced with es-toolkit equivalents
+- [x] **HARD-04**: All hook and CLI logic built from scratch with proper patterns (ts-pattern, attemptAsync, es-toolkit)
+- [x] **HARD-05**: dependencies.yaml uses new nested schema (plugins/cli_tools/mcp_servers) with version field
 
 ### CLI Tool Dependencies
 
@@ -29,7 +29,7 @@
 
 ### CLI Experience
 
-- [ ] **CLI-01**: CLI prompts for confirmation before any filesystem mutations
+- [x] **CLI-01**: CLI prompts for confirmation before any filesystem mutations
 - [ ] **CLI-02**: CLI supports non-interactive mode (flag) for agent/CI usage — skips prompts, assumes defaults
 - [ ] **CLI-03**: CLI provides status/list command showing declared dependencies and their found/missing state (one-level-deep visualization)
 
@@ -50,44 +50,46 @@
 
 ## Out of Scope
 
-| Feature | Reason |
-|---------|--------|
-| Preserving old dependencies.yaml format | Greenfield rewrite — no backward compat needed |
-| Migration from existing schema | Not in production yet — just use new schema |
-| Version checking for CLI tools | Just presence check via PATH, not semver — keep v1 simple |
-| MCP server health/running checks | Only check registration in config, not if process is running |
-| Dry-run mode | Unnecessary complexity — CLI already confirms before mutations |
-| Auto-installation of dependencies | Permission issues, breaks user control — provide install guidance instead |
-| Watch/continuous mode | Unclear user need, performance overhead |
-| Workspace multi-project support | Narrow use case, adds complexity |
-| Custom validation scripts | Security concerns with arbitrary code execution |
+| Feature                                 | Reason                                                                    |
+| --------------------------------------- | ------------------------------------------------------------------------- |
+| Preserving old dependencies.yaml format | Greenfield rewrite — no backward compat needed                            |
+| Migration from existing schema          | Not in production yet — just use new schema                               |
+| Version checking for CLI tools          | Just presence check via PATH, not semver — keep v1 simple                 |
+| MCP server health/running checks        | Only check registration in config, not if process is running              |
+| Dry-run mode                            | Unnecessary complexity — CLI already confirms before mutations            |
+| Auto-installation of dependencies       | Permission issues, breaks user control — provide install guidance instead |
+| Watch/continuous mode                   | Unclear user need, performance overhead                                   |
+| Workspace multi-project support         | Narrow use case, adds complexity                                          |
+| Custom validation scripts               | Security concerns with arbitrary code execution                           |
 
 ## Traceability
 
-| Requirement | Phase | Status |
-|-------------|-------|--------|
-| HARD-01 | Phase 1 | Pending |
-| HARD-02 | Phase 1 | Pending |
-| HARD-03 | Phase 1 | Pending |
-| HARD-04 | Phase 1 | Pending |
-| HARD-05 | Phase 1 | Pending |
-| CLI-01 | Phase 1 | Pending |
-| CTOOL-01 | Phase 2 | Pending |
-| CTOOL-02 | Phase 2 | Pending |
-| CTOOL-03 | Phase 2 | Pending |
-| CTOOL-04 | Phase 2 | Pending |
-| CLI-02 | Phase 2 | Pending |
-| MCP-01 | Phase 3 | Pending |
-| MCP-02 | Phase 3 | Pending |
-| MCP-03 | Phase 3 | Pending |
-| MCP-04 | Phase 3 | Pending |
-| CLI-03 | Phase 3 | Pending |
+| Requirement | Phase   | Status   |
+| ----------- | ------- | -------- |
+| HARD-01     | Phase 1 | Complete |
+| HARD-02     | Phase 1 | Complete |
+| HARD-03     | Phase 1 | Complete |
+| HARD-04     | Phase 1 | Complete |
+| HARD-05     | Phase 1 | Complete |
+| CLI-01      | Phase 1 | Complete |
+| CTOOL-01    | Phase 2 | Pending  |
+| CTOOL-02    | Phase 2 | Pending  |
+| CTOOL-03    | Phase 2 | Pending  |
+| CTOOL-04    | Phase 2 | Pending  |
+| CLI-02      | Phase 2 | Pending  |
+| MCP-01      | Phase 3 | Pending  |
+| MCP-02      | Phase 3 | Pending  |
+| MCP-03      | Phase 3 | Pending  |
+| MCP-04      | Phase 3 | Pending  |
+| CLI-03      | Phase 3 | Pending  |
 
 **Coverage:**
+
 - v1 requirements: 16 total
 - Mapped to phases: 16
 - Unmapped: 0 ✓
 
 ---
-*Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after greenfield rewrite approach*
+
+_Requirements defined: 2026-02-06_
+_Last updated: 2026-02-06 — Phase 1 requirements complete_
