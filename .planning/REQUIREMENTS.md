@@ -5,13 +5,13 @@
 
 ## v1 Requirements
 
-### Code Hardening
+### Core Rebuild
 
 - [ ] **HARD-01**: All control flow uses ts-pattern instead of ternaries or nested conditionals
 - [ ] **HARD-02**: All async error handling uses es-toolkit attemptAsync instead of try-catch
 - [ ] **HARD-03**: Custom utility checks replaced with es-toolkit equivalents
-- [ ] **HARD-04**: All logic paths traced end-to-end with bugs fixed
-- [ ] **HARD-05**: dependencies.yaml schema supports versioning field for backward compatibility
+- [ ] **HARD-04**: All hook and CLI logic built from scratch with proper patterns (ts-pattern, attemptAsync, es-toolkit)
+- [ ] **HARD-05**: dependencies.yaml uses new nested schema (plugins/cli_tools/mcp_servers) with version field
 
 ### CLI Tool Dependencies
 
@@ -44,7 +44,7 @@
 
 ### Testing
 
-- **TEST-01**: Config validation tests (schema parsing, backward compat, edge cases)
+- **TEST-01**: Config validation tests (schema parsing, edge cases)
 - **TEST-02**: Checker tests (plugin, CLI, MCP checker logic)
 - **TEST-03**: Output formatting tests (systemMessage generation)
 
@@ -52,6 +52,8 @@
 
 | Feature | Reason |
 |---------|--------|
+| Preserving old dependencies.yaml format | Greenfield rewrite — no backward compat needed |
+| Migration from existing schema | Not in production yet — just use new schema |
 | Version checking for CLI tools | Just presence check via PATH, not semver — keep v1 simple |
 | MCP server health/running checks | Only check registration in config, not if process is running |
 | Dry-run mode | Unnecessary complexity — CLI already confirms before mutations |
@@ -64,28 +66,28 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| HARD-01 | — | Pending |
-| HARD-02 | — | Pending |
-| HARD-03 | — | Pending |
-| HARD-04 | — | Pending |
-| HARD-05 | — | Pending |
-| CTOOL-01 | — | Pending |
-| CTOOL-02 | — | Pending |
-| CTOOL-03 | — | Pending |
-| CTOOL-04 | — | Pending |
-| MCP-01 | — | Pending |
-| MCP-02 | — | Pending |
-| MCP-03 | — | Pending |
-| MCP-04 | — | Pending |
-| CLI-01 | — | Pending |
-| CLI-02 | — | Pending |
-| CLI-03 | — | Pending |
+| HARD-01 | Phase 1 | Pending |
+| HARD-02 | Phase 1 | Pending |
+| HARD-03 | Phase 1 | Pending |
+| HARD-04 | Phase 1 | Pending |
+| HARD-05 | Phase 1 | Pending |
+| CLI-01 | Phase 1 | Pending |
+| CTOOL-01 | Phase 2 | Pending |
+| CTOOL-02 | Phase 2 | Pending |
+| CTOOL-03 | Phase 2 | Pending |
+| CTOOL-04 | Phase 2 | Pending |
+| CLI-02 | Phase 2 | Pending |
+| MCP-01 | Phase 3 | Pending |
+| MCP-02 | Phase 3 | Pending |
+| MCP-03 | Phase 3 | Pending |
+| MCP-04 | Phase 3 | Pending |
+| CLI-03 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
-- Mapped to phases: 0
-- Unmapped: 16 ⚠️
+- Mapped to phases: 16
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-02-06*
-*Last updated: 2026-02-06 after initial definition*
+*Last updated: 2026-02-06 after greenfield rewrite approach*
