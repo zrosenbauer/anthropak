@@ -1,13 +1,13 @@
-import { Liquid } from "liquidjs";
-import { DEPENDENCIES_TEMPLATE, HOOK_SCRIPT } from "../.generated/index.js";
-
-const engine = new Liquid();
+// Template and asset access (no template engine needed)
+import { DEPENDENCIES_YAML_TEMPLATE } from "../templates/dependencies-yaml.js";
+import { HOOK_SCRIPT } from "../.generated/index.js";
 
 /**
- * Renders the dependencies.yaml template
+ * Returns the dependencies.yaml template
+ * No rendering needed - template has no dynamic parts
  */
-export async function renderDependenciesYaml(): Promise<string> {
-  return engine.parseAndRender(DEPENDENCIES_TEMPLATE);
+export function renderDependenciesYaml(): string {
+  return DEPENDENCIES_YAML_TEMPLATE;
 }
 
 /**
@@ -21,16 +21,14 @@ export function getHookScript(): string {
  * Hook entry configuration
  */
 export interface HookEntry {
-  type: string;
-  command: string;
-  timeout: number;
+  name: string;
+  script: string;
 }
 
 /**
  * Default hook entry for anthropak
  */
 export const HOOK_ENTRY: HookEntry = {
-  type: "command",
-  command: "node ${CLAUDE_PLUGIN_ROOT}/hook/anthropak.mjs",
-  timeout: 5,
+  name: "anthropak",
+  script: "hook/anthropak.mjs",
 };

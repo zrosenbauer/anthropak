@@ -39,7 +39,9 @@
   },
   "dependencies": {
     "@clack/prompts": "^1.0.0",
-    "liquidjs": "^10.24.0",
+    "confbox": "^0.2.2",
+    "es-toolkit": "^1.44.0",
+    "ts-pattern": "^5.5.0",
     "yargs": "^17.7.2"
   },
   "devDependencies": {

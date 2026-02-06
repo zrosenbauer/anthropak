@@ -1,59 +1,62 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { HOOK_ENTRY, type HookEntry } from "./templates.js";
-
-const HOOK_COMMAND = HOOK_ENTRY.command;
-
-/**
- * Structure of hooks.json file
- */
-export interface HooksJson {
-  hooks: {
-    SessionStart?: HookEntry[];
-    [key: string]: HookEntry[] | undefined;
-  };
-}
+// hooks.json manipulation with attemptAsync and ts-pattern
+import { attemptAsync } from "es-toolkit";
+import { match } from "ts-pattern";
+import { readFileAsync, writeFileAsync } from "./fs.js";
+import { HOOK_ENTRY } from "./templates.js";
+import type { HooksJson } from "../types.js";
 
 /**
  * Read and parse hooks.json, returning empty structure if not exists
  */
-export function readHooksJson(hooksPath: string): HooksJson {
-  if (!existsSync(hooksPath)) {
-    return { hooks: {} };
-  }
-  try {
-    return JSON.parse(readFileSync(hooksPath, "utf8")) as HooksJson;
-  } catch {
-    return { hooks: {} };
-  }
+export async function readHooksJson(path: string): Promise<HooksJson> {
+  const [error, content] = await readFileAsync(path);
+
+  return match(error)
+    .with(null, () => {
+      const [parseError, parsed] = attemptAsync(async () => JSON.parse(content as string));
+      return match(parseError)
+        .with(null, () => parsed as HooksJson)
+        .otherwise(() => ({}));
+    })
+    .otherwise(() => ({}));
 }
 
 /**
  * Check if the hook entry already exists in SessionStart
  */
 export function hookExists(hooksJson: HooksJson): boolean {
-  const sessionStart = hooksJson.hooks?.SessionStart || [];
-  return sessionStart.some((hook) => hook.command === HOOK_COMMAND);
+  const sessionStart = hooksJson.SessionStart ?? [];
+  return sessionStart.some((hook) => hook.name === HOOK_ENTRY.name);
 }
 
 /**
- * Add the hook entry to SessionStart
+ * Add the hook entry to SessionStart if not exists
  */
 export function addHookEntry(hooksJson: HooksJson): HooksJson {
-  if (!hooksJson.hooks) {
-    hooksJson.hooks = {};
-  }
-  if (!hooksJson.hooks.SessionStart) {
-    hooksJson.hooks.SessionStart = [];
-  }
-  if (!hookExists(hooksJson)) {
-    hooksJson.hooks.SessionStart.push({ ...HOOK_ENTRY });
-  }
-  return hooksJson;
+  return match(hookExists(hooksJson))
+    .with(true, () => hooksJson)
+    .with(false, () => {
+      const sessionStart = hooksJson.SessionStart ?? [];
+      return {
+        ...hooksJson,
+        SessionStart: [...sessionStart, HOOK_ENTRY],
+      };
+    })
+    .exhaustive();
 }
 
 /**
  * Write hooks.json to disk
  */
-export function writeHooksJson(hooksPath: string, hooksJson: HooksJson): void {
-  writeFileSync(hooksPath, JSON.stringify(hooksJson, null, 2) + "\n");
+export async function writeHooksJson(path: string, hooksJson: HooksJson): Promise<void> {
+  const content = JSON.stringify(hooksJson, null, 2) + "\n";
+  const [error] = await writeFileAsync(path, content);
+
+  match(error)
+    .with(null, () => {
+      // Success - no action needed
+    })
+    .otherwise((err) => {
+      throw err;
+    });
 }

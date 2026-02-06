@@ -35,9 +35,15 @@ importers:
       '@clack/prompts':
         specifier: ^1.0.0
         version: 1.0.0
-      liquidjs:
-        specifier: ^10.24.0
-        version: 10.24.0
+      confbox:
+        specifier: ^0.2.2
+        version: 0.2.2
+      es-toolkit:
+        specifier: ^1.44.0
+        version: 1.44.0
+      ts-pattern:
+        specifier: ^5.5.0
+        version: 5.9.0
       yargs:
         specifier: ^17.7.2
         version: 17.7.2
@@ -651,10 +657,6 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
-  commander@10.0.1:
-    resolution: {integrity: sha512-y4Mg2tXshplEbSGzx7amzPwKKOCGuoSRP/CjEdwwk0FOGlUbq6lKuoyDZTNZkmxHdJtp54hdfY/JUrdL7Xfdug==}
-    engines: {node: '>=14'}
-
   confbox@0.2.2:
     resolution: {integrity: sha512-1NB+BKqhtNipMsov4xI/NnhCKp9XG9NamYp5PVm9klAT0fsrNPjaFICsCFhNhwZJKNh7zB/3q8qXz0E9oaMNtQ==}
 
@@ -1046,11 +1048,6 @@ packages:
   lightningcss@1.31.1:
     resolution: {integrity: sha512-l51N2r93WmGUye3WuFoN5k10zyvrVs0qfKBhyC5ogUQ6Ew6JUSswh78mbSO+IU3nTWsyOArqPCcShdQSadghBQ==}
     engines: {node: '>= 12.0.0'}
-
-  liquidjs@10.24.0:
-    resolution: {integrity: sha512-TAUNAdgwaAXjjcUFuYVJm9kOVH7zc0mTKxsG9t9Lu4qdWjB2BEblyVIYpjWcmJLMGgiYqnGNJjpNMHx0gp/46A==}
-    engines: {node: '>=16'}
-    hasBin: true
 
   locate-path@5.0.0:
     resolution: {integrity: sha512-t7hw9pI+WvuwNJXwk5zVHpyhIqzg2qTlklJOf0mVxGSbe3Fp2VieZcduNYjaLDoy6p9uGpQEGWG87WpMKlNq8g==}
@@ -2187,8 +2184,6 @@ snapshots:
 
   color-name@1.1.4: {}
 
-  commander@10.0.1: {}
-
   confbox@0.2.2: {}
 
   consola@3.4.2: {}
@@ -2516,10 +2511,6 @@ snapshots:
       lightningcss-linux-x64-musl: 1.31.1
       lightningcss-win32-arm64-msvc: 1.31.1
       lightningcss-win32-x64-msvc: 1.31.1
-
-  liquidjs@10.24.0:
-    dependencies:
-      commander: 10.0.1
 
   locate-path@5.0.0:
     dependencies:

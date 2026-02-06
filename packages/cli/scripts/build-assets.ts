@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 /**
  * Generates src/.generated/ with embedded assets.
  * This allows both npm and standalone binary distributions to work without
@@ -35,22 +35,6 @@ export const VERSION = '${version}'
   );
   console.log("Generated: src/.generated/version.ts");
 
-  // Generate template.ts
-  const templatePath = join(CLI_ROOT, "src", "templates", "dependencies.yaml.liquid");
-  if (!existsSync(templatePath)) {
-    console.error(`Template not found: ${templatePath}`);
-    process.exit(1);
-  }
-  const templateContent = readFileSync(templatePath, "utf8");
-
-  writeFileSync(
-    join(OUTPUT_DIR, "template.ts"),
-    `// AUTO-GENERATED - DO NOT EDIT
-export const DEPENDENCIES_TEMPLATE = \`${escapeForTemplate(templateContent)}\`
-`,
-  );
-  console.log("Generated: src/.generated/template.ts");
-
   // Generate hook.ts
   const hookPath = join(HOOK_PACKAGE, "dist", "anthropak.mjs");
   if (!existsSync(hookPath)) {
@@ -73,7 +57,6 @@ export const HOOK_SCRIPT = \`${escapeForTemplate(hookContent)}\`
     join(OUTPUT_DIR, "index.ts"),
     `// AUTO-GENERATED - DO NOT EDIT
 export { VERSION } from './version.js'
-export { DEPENDENCIES_TEMPLATE } from './template.js'
 export { HOOK_SCRIPT } from './hook.js'
 `,
   );
