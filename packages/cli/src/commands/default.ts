@@ -1,6 +1,8 @@
-import { existsSync } from "node:fs";
+// Default command - auto-detect and delegate to init or update
 import { join, resolve } from "node:path";
+import { match } from "ts-pattern";
 import type { CommandModule } from "yargs";
+import { fileExists } from "../lib/fs.js";
 import init from "./init.js";
 import update from "./update.js";
 
@@ -8,10 +10,13 @@ interface DefaultArgs {
   path: string;
 }
 
-function isInitialized(root: string): boolean {
-  const hooksDir = join(root, "hook");
-  const depsFile = join(root, "dependencies.yaml");
-  return existsSync(hooksDir) && existsSync(depsFile);
+/**
+ * Check if anthropak is initialized in the given directory
+ */
+async function isInitialized(root: string): Promise<boolean> {
+  const hooksDir = await fileExists(join(root, "hook"));
+  const depsFile = await fileExists(join(root, "dependencies.yaml"));
+  return hooksDir && depsFile;
 }
 
 const command: CommandModule<object, DefaultArgs> = {
@@ -19,18 +24,22 @@ const command: CommandModule<object, DefaultArgs> = {
   describe: false, // hidden from help
   builder: (yargs) =>
     yargs.positional("path", {
-      describe: "Plugin root directory",
+      describe: "Plugin/project root directory",
       default: ".",
       type: "string",
     }),
-  handler: (argv) => {
+  handler: async (argv) => {
     const root = resolve(argv.path);
+    const initialized = await isInitialized(root);
 
-    if (isInitialized(root)) {
-      update.handler({ ...argv, _: [], $0: "" });
-    } else {
-      init.handler({ ...argv, force: false, _: [], $0: "" });
-    }
+    match(initialized)
+      .with(true, () => {
+        update.handler({ ...argv, _: [], $0: "" });
+      })
+      .with(false, () => {
+        init.handler({ ...argv, force: false, _: [], $0: "" });
+      })
+      .exhaustive();
   },
 };
 

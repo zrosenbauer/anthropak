@@ -11,13 +11,14 @@ import type { HooksJson } from "../types.js";
 export async function readHooksJson(path: string): Promise<HooksJson> {
   const [error, content] = await readFileAsync(path);
 
-  return match(error)
-    .with(null, () => {
-      const [parseError, parsed] = attemptAsync(async () => JSON.parse(content as string));
-      return match(parseError)
-        .with(null, () => parsed as HooksJson)
-        .otherwise(() => ({}));
-    })
+  if (error !== null) {
+    return {};
+  }
+
+  const [parseError, parsed] = await attemptAsync(async () => JSON.parse(content as string));
+
+  return match(parseError)
+    .with(null, () => parsed as HooksJson)
     .otherwise(() => ({}));
 }
 
