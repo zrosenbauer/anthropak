@@ -31,6 +31,12 @@ Anthropak extends from plugin dependency checking to a unified three-ecosystem v
 4. User running `anthropak init` or `anthropak update` sees confirmation prompt before files are written
 5. dependencies.yaml uses new nested schema (plugins/cli_tools/mcp_servers) with version field — old flat format not supported
 
+**Plans:** 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Rebuild hook package (types, config, plugin checker, output, crash-proof entry point)
+- [ ] 01-02-PLAN.md — Rebuild CLI package (init/update/validate commands with confirmations, new schema template)
+
 ---
 
 ### Phase 2: CLI Tool Dependencies
@@ -91,13 +97,12 @@ Anthropak extends from plugin dependency checking to a unified three-ecosystem v
 
 ## Next Steps
 
-1. Review roadmap for accuracy and completeness
-2. Plan Phase 1 with `/gsd:plan-phase 1`
-3. Execute Phase 1 plans sequentially
-4. Verify Phase 1 success criteria before proceeding
-5. Continue to Phase 2
+1. Execute Phase 1 plans with `/gsd:execute-phase 1`
+2. Verify Phase 1 success criteria before proceeding
+3. Plan Phase 2 with `/gsd:plan-phase 2`
+4. Continue to Phase 2
 
 ---
 
 *Roadmap created: 2026-02-06*
-*Last updated: 2026-02-06 (greenfield rewrite approach)*
+*Last updated: 2026-02-06 (Phase 1 planned — 2 plans in 2 waves)*
