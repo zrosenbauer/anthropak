@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { parseYAML, parseJSON, parseJSONC } from "confbox";
 import { attemptAsync } from "es-toolkit";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import type { ConfigLoadResult, DependenciesConfig, EcosystemSection } from "../types.js";
 
 const CONFIG_FILES = [
@@ -45,7 +45,9 @@ export async function loadConfig(rootDir: string): Promise<ConfigLoadResult> {
     });
 
     if (parseError) {
-      const errorMessage = parseError instanceof Error ? parseError.message : "Parse error";
+      const errorMessage = match(parseError)
+        .with(P.instanceOf(Error), (e) => e.message)
+        .otherwise(() => "Parse error");
       return { status: "parse_error", message: errorMessage };
     }
 

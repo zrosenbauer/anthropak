@@ -100,7 +100,10 @@ const command: CommandModule<object, InitOptions> = {
     const hookScriptExists = await fileExists(hookScript);
     fileActions.push({
       path: "hook/anthropak.mjs",
-      action: hookScriptExists ? "update" : "create",
+      action: match(hookScriptExists)
+        .with(true, () => "update" as const)
+        .with(false, () => "create" as const)
+        .exhaustive(),
     });
 
     const hooksJsonPath = join(root, "hooks.json");
@@ -128,7 +131,9 @@ const command: CommandModule<object, InitOptions> = {
     // Show file summary
     p.log.info("\nFiles to be modified:");
     fileActions.forEach((action) => {
-      const reason = action.reason ? ` (${action.reason})` : "";
+      const reason = match(action.reason)
+        .with(P.string, (r) => ` (${r})`)
+        .otherwise(() => "");
       match(action.action)
         .with("create", () => p.log.step(`  [CREATE] ${action.path}${reason}`))
         .with("update", () => p.log.step(`  [UPDATE] ${action.path}${reason}`))

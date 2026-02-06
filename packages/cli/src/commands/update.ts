@@ -1,7 +1,7 @@
 // Update command - update hook script with confirmation
 import * as p from "@clack/prompts";
 import { join, resolve } from "node:path";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import type { CommandModule } from "yargs";
 import { getHookScript } from "../lib/templates.js";
 import { readHooksJson, hookExists, addHookEntry, writeHooksJson } from "../lib/hooks.js";
@@ -29,7 +29,10 @@ const command: CommandModule<object, UpdateOptions> = {
     const hookScriptExists = await fileExists(hookScript);
     fileActions.push({
       path: "hook/anthropak.mjs",
-      action: hookScriptExists ? "update" : "create",
+      action: match(hookScriptExists)
+        .with(true, () => "update" as const)
+        .with(false, () => "create" as const)
+        .exhaustive(),
     });
 
     const hooksJsonPath = join(root, "hooks.json");
@@ -58,7 +61,9 @@ const command: CommandModule<object, UpdateOptions> = {
     // Show file summary
     p.log.info("Files to be modified:");
     fileActions.forEach((action) => {
-      const reason = action.reason ? ` (${action.reason})` : "";
+      const reason = match(action.reason)
+        .with(P.string, (r) => ` (${r})`)
+        .otherwise(() => "");
       match(action.action)
         .with("create", () => p.log.step(`  [CREATE] ${action.path}${reason}`))
         .with("update", () => p.log.step(`  [UPDATE] ${action.path}${reason}`))
