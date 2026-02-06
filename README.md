@@ -1,6 +1,6 @@
-# anthropak
-
-> Manage plugin dependencies for Claude Code plugins
+<p align="center">
+  <img src="./assets/banner.svg" alt="anthropak" width="100%" />
+</p>
 
 A CLI tool and hook system that lets Claude Code plugins declare and check for dependencies on other plugins. When a plugin depends on MCP servers or other Claude Code plugins, anthropak ensures users are notified about missing dependencies.
 
