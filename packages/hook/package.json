@@ -18,7 +18,9 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "confbox": "^0.2.2"
+    "confbox": "^0.2.2",
+    "es-toolkit": "^1.44.0",
+    "ts-pattern": "^5.5.0"
   },
   "devDependencies": {
     "@types/node": "^24.10.10",

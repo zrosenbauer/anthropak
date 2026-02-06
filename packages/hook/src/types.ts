@@ -1,77 +1,55 @@
-/**
- * @fileoverview Type definitions for the check-deps hook.
- */
+// New nested schema types for version 1
 
-/**
- * Represents a plugin dependency declaration.
- */
+export interface DependenciesConfig {
+  version: 1;
+  plugins?: EcosystemSection;
+  cli?: EcosystemSection;
+  mcp?: EcosystemSection;
+}
+
+export interface EcosystemSection {
+  required: DependencyEntry[];
+  optional: DependencyEntry[];
+}
+
 export interface PluginDependency {
-  /** The plugin identifier/name */
   plugin: string;
-  /** Optional marketplace identifier */
-  marketplace?: string;
-  /** Optional GitHub repository in "owner/repo" format */
   github?: string;
-  /** Optional human-readable description */
-  description?: string;
-  /** Optional custom install command */
   install?: string;
+  description?: string;
 }
 
-/**
- * Parsed structure of dependencies config file.
- */
-export interface ParsedDependencies {
-  /** Required plugin dependencies */
-  required: PluginDependency[];
-  /** Optional plugin dependencies */
-  optional: PluginDependency[];
-}
+// Phase 1: DependencyEntry is same as PluginDependency
+// CLI and MCP entries will extend in later phases
+export type DependencyEntry = PluginDependency;
 
-/**
- * Raw config file structure before validation.
- */
-export interface RawConfig {
-  dependencies?: {
-    required?: unknown[];
-    optional?: unknown[];
-  };
-}
+// Discriminated union for validation results
+export type ValidationResult =
+  | { status: "success"; config: DependenciesConfig }
+  | { status: "not_found" }
+  | { status: "parse_error"; message: string }
+  | { status: "validation_error"; errors: string[] };
 
-/**
- * Represents a single plugin installation record.
- */
-export interface PluginInstallation {
-  /** Installation scope */
-  scope: "global" | "project";
-  /** Project path for project-scoped installations */
-  projectPath?: string;
-}
+// Alias for config loading (same structure)
+export type ConfigLoadResult = ValidationResult;
 
-/**
- * Structure of Claude's installed plugins registry.
- */
+// Registry types
 export interface InstalledPluginsRegistry {
-  /** Map of plugin keys to installations */
   plugins: Record<string, PluginInstallation[]>;
 }
 
-/**
- * Response structure for the hook output.
- */
+export interface PluginInstallation {
+  scope: "global" | "project";
+  projectPath?: string;
+}
+
+// Hook response
 export interface HookResponse {
-  /** Optional system message to display */
   systemMessage?: string;
 }
 
-/**
- * Result of config validation.
- */
-export interface ValidationResult {
-  /** Whether validation succeeded */
-  valid: boolean;
-  /** Validation errors if any */
-  errors: string[];
-  /** Parsed dependencies if valid */
-  data?: ParsedDependencies;
+// Check result
+export interface CheckResult {
+  missingRequired: PluginDependency[];
+  missingOptional: PluginDependency[];
 }

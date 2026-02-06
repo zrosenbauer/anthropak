@@ -10,7 +10,7 @@ export default defineConfig({
   format: ["esm"],
   clean: true,
   shims: true,
-  noExternal: ["confbox"],
+  noExternal: ["confbox", "ts-pattern", "es-toolkit"],
   outputOptions: {
     banner,
     entryFileNames: "[name]",
