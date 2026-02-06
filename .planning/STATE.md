@@ -6,18 +6,18 @@
 
 **Core Value:** When a plugin loads, the user immediately knows what's missing and how to install it
 
-**Current Focus:** Phase 1 (Core Rebuild) in progress - hook package rebuilt
+**Current Focus:** Phase 1 (Core Rebuild) in progress - CLI package rebuilt
 
 ---
 
 ## Current Position
 
 **Phase:** 1 of 3 (Core Rebuild)
-**Plan:** 1 of 3 in current phase
+**Plan:** 2 of 3 in current phase
 **Status:** In progress
-**Last activity:** 2026-02-06 - Completed 01-01-PLAN.md
+**Last activity:** 2026-02-06 - Completed 01-02-PLAN.md
 
-**Progress:** `[███░░░░░░░░░░░░░░░░░]` 33% (1/3 plans in Phase 1 complete)
+**Progress:** `[██████░░░░░░░░░░░░░░]` 67% (2/3 plans in Phase 1 complete)
 
 ---
 
@@ -46,10 +46,13 @@
 | 2026-02-06 | Zero try-catch policy (01-01)                     | All error handling through attemptAsync for composability | [error, result] tuple pattern throughout                |
 | 2026-02-06 | Discriminated unions for results (01-01)          | Type-safe branching with compiler-enforced exhaustiveness | ValidationResult uses status field                      |
 | 2026-02-06 | Top-level crash protection (01-01)                | Hook must never crash, even on unexpected errors          | Entry point wraps entire execution in attemptAsync      |
+| 2026-02-06 | Remove liquidjs dependency (01-02)                | Template is simple YAML with no dynamic parts             | Plain TypeScript string constant, reduced dependencies  |
+| 2026-02-06 | Duplicate config loading in CLI (01-02)           | CLI and hook run in different environments                | CLI has own config-loader.ts, acceptable duplication    |
+| 2026-02-06 | Default 'No' for confirmations (01-02)            | Safety before filesystem mutations per CONTEXT.md         | All confirm() prompts default to false                  |
 
 ### Open Questions
 
-- None (roadmap revised, ready for planning)
+- None
 
 ### Blockers
 
@@ -71,26 +74,29 @@
 
 ## Session Continuity
 
-**Last session:** 2026-02-06T22:04:55Z
-**Stopped at:** Completed 01-01-PLAN.md
+**Last session:** 2026-02-06T22:16:27Z
+**Stopped at:** Completed 01-02-PLAN.md
 **Resume file:** None
 
 ### What Just Happened
 
-Completed 01-01-PLAN.md: Hook package rebuilt from scratch
+Completed 01-02-PLAN.md: CLI package rebuilt from scratch
 
-- New nested schema (version: 1, plugins/cli/mcp sections) with discriminated unions
-- All async operations use attemptAsync (zero try-catch blocks)
-- All control flow uses ts-pattern match().exhaustive() (zero ternaries, zero nested conditionals)
-- Top-level crash protection ensures hook always outputs valid JSON
-- Plugin dependency checking functional against installed_plugins.json
-- Builds successfully to dist/anthropak.mjs
+- Complete CLI rebuild with init/update/validate commands
+- Init command: mode detection (plugin vs repo), user confirmation, file summary before write
+- Update command: file summary and confirmation before write
+- Validate command: detailed error output with actionable suggestions
+- Template replaced with TypeScript module (liquidjs dependency removed)
+- All commands use @clack/prompts for user interaction
+- All file operations use attemptAsync (zero try-catch blocks)
+- All control flow uses ts-pattern match() (zero ternaries)
+- Full build pipeline working (hook → CLI → dist/cli.mjs)
 
 ### What's Next
 
-**Next plan:** 01-02-PLAN.md (CLI rebuild with init/update/validate commands)
+**Next plan:** 01-03-PLAN.md (Integration testing and end-to-end validation)
 
-Focus: Rebuild CLI from scratch with same patterns (ts-pattern + attemptAsync), two modes (plugin vs repo), confirmation prompts, asset embedding (hook script + templates).
+Focus: Test the complete flow from init to hook execution, validate the rebuild, verify all patterns are correctly applied.
 
 ---
 
