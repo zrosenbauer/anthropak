@@ -6,26 +6,28 @@
 
 **Core Value:** When a plugin loads, the user immediately knows what's missing and how to install it
 
-**Current Focus:** Roadmap revised (greenfield rewrite approach), ready for Phase 1 planning (Core Rebuild)
+**Current Focus:** Phase 1 (Core Rebuild) in progress - hook package rebuilt
 
 ---
 
 ## Current Position
 
-**Phase:** 1 - Core Rebuild
-**Plan:** Not started
-**Status:** Roadmap revised for greenfield rewrite, awaiting plan-phase
-**Progress:** `[░░░░░░░░░░░░░░░░░░░░]` 0% (0/3 phases complete)
+**Phase:** 1 of 3 (Core Rebuild)
+**Plan:** 1 of 3 in current phase
+**Status:** In progress
+**Last activity:** 2026-02-06 - Completed 01-01-PLAN.md
+
+**Progress:** `[███░░░░░░░░░░░░░░░░░]` 33% (1/3 plans in Phase 1 complete)
 
 ---
 
 ## Performance Metrics
 
-| Metric | Target | Actual | Status |
-|--------|--------|--------|--------|
-| Phase completion | — | 0/3 | Pending |
-| Requirements delivered | — | 0/16 | Pending |
-| Success criteria met | — | 0/15 | Pending |
+| Metric                 | Target | Actual | Status  |
+| ---------------------- | ------ | ------ | ------- |
+| Phase completion       | —      | 0/3    | Pending |
+| Requirements delivered | —      | 0/16   | Pending |
+| Success criteria met   | —      | 0/15   | Pending |
 
 ---
 
@@ -33,14 +35,17 @@
 
 ### Key Decisions
 
-| Date | Decision | Rationale | Outcome |
-|------|----------|-----------|---------|
-| 2026-02-06 | Greenfield rewrite, not refactor | Not in production — build it right from scratch | Phase 1 renamed to "Core Rebuild" |
-| 2026-02-06 | Existing code is reference only | No backward compat, no migration — just rebuild | New nested schema, new patterns throughout |
-| 2026-02-06 | ts-pattern + attemptAsync + es-toolkit from day 1 | Proper patterns from start, not bolted on later | All Phase 1 logic uses these patterns |
-| 2026-02-06 | CLI tools before MCP servers | Simpler implementation validates checker abstraction | Phase 2 → Phase 3 order |
-| 2026-02-06 | Tests deferred to v2 | Ship working features first | No test phase in roadmap |
-| 2026-02-06 | Distribute CLI experience requirements | Prompts/non-interactive/status belong with their context | CLI-01 in Phase 1, CLI-02 in Phase 2, CLI-03 in Phase 3 |
+| Date       | Decision                                          | Rationale                                                 | Outcome                                                 |
+| ---------- | ------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
+| 2026-02-06 | Greenfield rewrite, not refactor                  | Not in production — build it right from scratch           | Phase 1 renamed to "Core Rebuild"                       |
+| 2026-02-06 | Existing code is reference only                   | No backward compat, no migration — just rebuild           | New nested schema, new patterns throughout              |
+| 2026-02-06 | ts-pattern + attemptAsync + es-toolkit from day 1 | Proper patterns from start, not bolted on later           | All Phase 1 logic uses these patterns                   |
+| 2026-02-06 | CLI tools before MCP servers                      | Simpler implementation validates checker abstraction      | Phase 2 → Phase 3 order                                 |
+| 2026-02-06 | Tests deferred to v2                              | Ship working features first                               | No test phase in roadmap                                |
+| 2026-02-06 | Distribute CLI experience requirements            | Prompts/non-interactive/status belong with their context  | CLI-01 in Phase 1, CLI-02 in Phase 2, CLI-03 in Phase 3 |
+| 2026-02-06 | Zero try-catch policy (01-01)                     | All error handling through attemptAsync for composability | [error, result] tuple pattern throughout                |
+| 2026-02-06 | Discriminated unions for results (01-01)          | Type-safe branching with compiler-enforced exhaustiveness | ValidationResult uses status field                      |
+| 2026-02-06 | Top-level crash protection (01-01)                | Hook must never crash, even on unexpected errors          | Entry point wraps entire execution in attemptAsync      |
 
 ### Open Questions
 
@@ -66,31 +71,27 @@
 
 ## Session Continuity
 
+**Last session:** 2026-02-06T22:04:55Z
+**Stopped at:** Completed 01-01-PLAN.md
+**Resume file:** None
+
 ### What Just Happened
 
-Roadmap revised based on user feedback (greenfield rewrite approach):
-- Phase 1 renamed: "Code Hardening" → "Core Rebuild"
-- Phase 1 goal updated: reflects rebuilding from scratch, not refactoring
-- Phase 1 success criteria updated: new code quality, not migration concerns
-- REQUIREMENTS.md updated: HARD-04/HARD-05 descriptions reflect greenfield approach
-- Out of scope expanded: preserving old schema format, migration concerns
-- Key decisions updated: greenfield rewrite, existing code as reference only
+Completed 01-01-PLAN.md: Hook package rebuilt from scratch
+
+- New nested schema (version: 1, plugins/cli/mcp sections) with discriminated unions
+- All async operations use attemptAsync (zero try-catch blocks)
+- All control flow uses ts-pattern match().exhaustive() (zero ternaries, zero nested conditionals)
+- Top-level crash protection ensures hook always outputs valid JSON
+- Plugin dependency checking functional against installed_plugins.json
+- Builds successfully to dist/anthropak.mjs
 
 ### What's Next
 
-Next action: `/gsd:plan-phase 1` to decompose Phase 1 (Core Rebuild) into executable plans.
+**Next plan:** 01-02-PLAN.md (CLI rebuild with init/update/validate commands)
 
-Focus: Build hook and CLI from scratch using ts-pattern (all control flow), attemptAsync (all async), es-toolkit (all utilities), new nested schema (plugins/cli_tools/mcp_servers with version field), confirmation prompts.
-
-### Context for Next Session
-
-- Quick depth = 1-3 plans per phase
-- Phase 1 has 6 requirements → expect 2-3 plans
-- Research summary suggests no additional research needed (patterns are standard)
-- User constraint: code style matters (no ternaries, no nested conditionals, use ts-pattern + es-toolkit)
-- Schema is NEW: nested structure (plugins/cli_tools/mcp_servers) with version field
-- Existing code: reference material only, not something to preserve or migrate
+Focus: Rebuild CLI from scratch with same patterns (ts-pattern + attemptAsync), two modes (plugin vs repo), confirmation prompts, asset embedding (hook script + templates).
 
 ---
 
-*State tracking started: 2026-02-06*
+_State tracking started: 2026-02-06_
