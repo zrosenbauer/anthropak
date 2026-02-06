@@ -1,5 +1,5 @@
 import { attemptAsync } from "es-toolkit";
-import { match } from "ts-pattern";
+import { match, P } from "ts-pattern";
 import { readStdin } from "./lib/io.js";
 import { loadConfig } from "./lib/config.js";
 import { loadInstalledPlugins } from "./lib/registry.js";
@@ -30,7 +30,9 @@ import { PLUGIN_ROOT, PROJECT_DIR, INSTALLED_PLUGINS_PATH } from "./lib/constant
   });
 
   // Always output valid JSON, even on unexpected errors
-  const output = error ? {} : response;
+  const output = match({ error, response })
+    .with({ error: P.nullish }, ({ response: r }) => r)
+    .otherwise(() => ({}));
   console.log(JSON.stringify(output));
   process.exit(0);
 })();

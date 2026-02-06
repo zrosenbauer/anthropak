@@ -16,14 +16,17 @@ export function getInstallCommand(dep: PluginDependency): string {
  * Formats missing dependencies section
  */
 export function formatMissingDependencies(missing: PluginDependency[], required: boolean): string {
-  const header = required
-    ? "**Missing Required Plugin Dependencies**"
-    : "**Missing Optional Plugin Dependencies**";
+  const header = match(required)
+    .with(true, () => "**Missing Required Plugin Dependencies**")
+    .with(false, () => "**Missing Optional Plugin Dependencies**")
+    .exhaustive();
 
   const lines = [header];
 
   for (const dep of missing) {
-    const desc = dep.description ? ` - ${dep.description}` : "";
+    const desc = match(dep.description)
+      .with(P.string, (d) => ` - ${d}`)
+      .otherwise(() => "");
     lines.push(`- **${dep.plugin}**${desc}`);
     lines.push(`  \`${getInstallCommand(dep)}\``);
   }
