@@ -1,60 +1,36 @@
-import type { HookResponse } from "./types.js";
-import { readStdin, PLUGIN_ROOT, PROJECT_DIR, INSTALLED_PLUGINS_PATH } from "./lib/io.js";
-import { loadConfig, validateConfig } from "./lib/config.js";
-import { loadInstalledPlugins, isPluginInstalled } from "./lib/registry.js";
-import { formatMissingDeps } from "./lib/output.js";
+import { attemptAsync } from "es-toolkit";
+import { match } from "ts-pattern";
+import { readStdin } from "./lib/io.js";
+import { loadConfig } from "./lib/config.js";
+import { loadInstalledPlugins } from "./lib/registry.js";
+import { checkPlugins } from "./checkers/plugins.js";
+import { buildHookResponse, buildErrorResponse } from "./lib/output.js";
+import { PLUGIN_ROOT, PROJECT_DIR, INSTALLED_PLUGINS_PATH } from "./lib/constants.js";
 
 (async () => {
-  try {
+  // Top-level crash protection - hook must never crash
+  const [error, response] = await attemptAsync(async () => {
+    // Read stdin (hook context from Claude Code)
     await readStdin();
 
-    const rawConfig = loadConfig(PLUGIN_ROOT);
+    // Load and validate config
+    const loadResult = await loadConfig(PLUGIN_ROOT);
 
-    if (!rawConfig) {
-      console.log(JSON.stringify({}));
-      process.exit(0);
-    }
+    // Match on result - success path checks deps, other paths return error messages
+    return await match(loadResult)
+      .with({ status: "success" }, async ({ config }) => {
+        const registry = await loadInstalledPlugins(INSTALLED_PLUGINS_PATH);
+        const checkResult = checkPlugins(config, registry, PROJECT_DIR);
+        return buildHookResponse(checkResult);
+      })
+      .with({ status: "not_found" }, () => buildErrorResponse(loadResult))
+      .with({ status: "parse_error" }, () => buildErrorResponse(loadResult))
+      .with({ status: "validation_error" }, () => buildErrorResponse(loadResult))
+      .exhaustive();
+  });
 
-    const validation = validateConfig(rawConfig);
-
-    if (!validation.valid || !validation.data) {
-      console.log(JSON.stringify({}));
-      process.exit(0);
-    }
-
-    const deps = validation.data;
-
-    const installedPlugins = loadInstalledPlugins(INSTALLED_PLUGINS_PATH);
-
-    const missingRequired = deps.required.filter((dep) => {
-      return !isPluginInstalled(installedPlugins, dep.plugin, dep.marketplace, PROJECT_DIR);
-    });
-
-    const missingOptional = deps.optional.filter((dep) => {
-      return !isPluginInstalled(installedPlugins, dep.plugin, dep.marketplace, PROJECT_DIR);
-    });
-
-    const messages: string[] = [];
-
-    if (missingRequired.length > 0) {
-      messages.push(
-        ...formatMissingDeps(missingRequired, "**Missing Required Plugin Dependencies**"),
-      );
-      messages.push("");
-    }
-
-    if (missingOptional.length > 0) {
-      messages.push(
-        ...formatMissingDeps(missingOptional, "**Missing Optional Plugin Dependencies**"),
-      );
-    }
-
-    const response: HookResponse =
-      messages.length > 0 ? { systemMessage: messages.join("\n") } : {};
-    console.log(JSON.stringify(response));
-  } catch {
-    console.log(JSON.stringify({}));
-  }
-
+  // Always output valid JSON, even on unexpected errors
+  const output = error ? {} : response;
+  console.log(JSON.stringify(output));
   process.exit(0);
 })();

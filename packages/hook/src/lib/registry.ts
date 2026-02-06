@@ -1,69 +1,72 @@
-import { existsSync, readFileSync } from "node:fs";
-import type { InstalledPluginsRegistry, PluginInstallation } from "../types.js";
-import { safeParse } from "./utils.js";
+import { readFile } from "node:fs/promises";
+import { attemptAsync } from "es-toolkit";
+import { match } from "ts-pattern";
+import type { InstalledPluginsRegistry } from "../types.js";
 import { DEFAULT_REGISTRY } from "./constants.js";
 
 /**
- * Checks if a project directory is covered by an installation.
+ * Loads installed plugins registry
+ * Returns empty registry on any error (file not found, parse error, etc.)
  */
-function isProjectCovered(inst: PluginInstallation, projectDir: string): boolean {
-  if (inst.scope === "global") {
-    return true;
+export async function loadInstalledPlugins(
+  registryPath: string,
+): Promise<InstalledPluginsRegistry> {
+  const [readError, content] = await attemptAsync(async () => {
+    return await readFile(registryPath, "utf-8");
+  });
+
+  if (readError) {
+    return DEFAULT_REGISTRY;
   }
-  if (!inst.projectPath) {
-    return false;
+
+  const [parseError, parsed] = await attemptAsync(async () => {
+    const result = JSON.parse(content as string);
+    if (result === null) {
+      throw new Error("JSON.parse returned null");
+    }
+    return result as unknown;
+  });
+
+  if (parseError) {
+    return DEFAULT_REGISTRY;
   }
-  return projectDir === inst.projectPath || projectDir.startsWith(inst.projectPath + "/");
+
+  return parsed as InstalledPluginsRegistry;
 }
 
 /**
- * Loads the installed plugins registry.
- *
- * @param registryPath - Path to the installed_plugins.json file
- * @returns Registry object, or empty registry if file doesn't exist or is invalid
- */
-export function loadInstalledPlugins(registryPath: string): InstalledPluginsRegistry {
-  if (!existsSync(registryPath)) {
-    return DEFAULT_REGISTRY;
-  }
-  try {
-    const content = readFileSync(registryPath, "utf8");
-    return safeParse(content, DEFAULT_REGISTRY);
-  } catch {
-    return DEFAULT_REGISTRY;
-  }
-}
-
-/**
- * Checks if a plugin is installed and available for the current project.
- * A plugin is considered installed if it has a global installation or
- * a project-scoped installation that covers the current project path.
- *
- * @param installedPlugins - Registry of installed plugins
- * @param plugin - Plugin identifier to check
- * @param marketplace - Optional marketplace to match exactly
- * @param projectDir - Current project directory path
- * @returns True if the plugin is installed and available
+ * Checks if a plugin is installed for the current project
  */
 export function isPluginInstalled(
-  installedPlugins: InstalledPluginsRegistry,
-  plugin: string,
-  marketplace: string | undefined,
+  registry: InstalledPluginsRegistry,
+  pluginName: string,
   projectDir: string,
 ): boolean {
-  const plugins = installedPlugins.plugins || {};
+  const plugins = registry.plugins;
 
-  if (marketplace) {
-    const key = `${plugin}@${marketplace}`;
-    const installations = plugins[key] || [];
-    return installations.some((inst) => isProjectCovered(inst, projectDir));
-  }
-
+  // Find all plugin keys matching this plugin name (format: pluginName@source)
   for (const key of Object.keys(plugins)) {
-    if (key.startsWith(`${plugin}@`)) {
-      const installations = plugins[key] || [];
-      if (installations.some((inst) => isProjectCovered(inst, projectDir))) {
-        return true;
+    if (key.startsWith(`${pluginName}@`)) {
+      const installations = plugins[key];
+
+      // Check if any installation covers this project
+      for (const inst of installations) {
+        const covers = match(inst)
+          .with({ scope: "global" }, () => true)
+          .with({ scope: "project" }, (projectInst) => {
+            if (!projectInst.projectPath) {
+              return false;
+            }
+            return (
+              projectDir === projectInst.projectPath ||
+              projectDir.startsWith(projectInst.projectPath + "/")
+            );
+          })
+          .exhaustive();
+
+        if (covers) {
+          return true;
+        }
       }
     }
   }

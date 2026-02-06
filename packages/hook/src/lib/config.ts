@@ -22,15 +22,22 @@ export async function loadConfig(rootDir: string): Promise<ConfigLoadResult> {
     }
 
     const [parseError, parsed] = await attemptAsync(async () => {
-      return match(configFile.format)
-        .with("yaml", () => parseYAML(content))
-        .with("json", () => parseJSON(content))
-        .with("jsonc", () => parseJSONC(content))
+      const result = match(configFile.format)
+        .with("yaml", () => parseYAML(content as string))
+        .with("json", () => parseJSON(content as string))
+        .with("jsonc", () => parseJSONC(content as string))
         .exhaustive();
+
+      if (result === null) {
+        throw new Error("Parser returned null");
+      }
+
+      return result as unknown;
     });
 
     if (parseError) {
-      return { status: "parse_error", message: parseError.message };
+      const errorMessage = parseError instanceof Error ? parseError.message : "Parse error";
+      return { status: "parse_error", message: errorMessage };
     }
 
     return validateConfig(parsed);

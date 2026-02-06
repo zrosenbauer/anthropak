@@ -1,57 +1,80 @@
-/**
- * @fileoverview Output formatting utilities.
- */
-
-import type { PluginDependency } from "../types.js";
+import { match, P } from "ts-pattern";
+import type { PluginDependency, CheckResult, HookResponse, ConfigLoadResult } from "../types.js";
 
 /**
- * Generates the appropriate install command for a plugin dependency.
- * Prioritizes custom install commands, then marketplace, then GitHub sources.
- *
- * @param dep - Plugin dependency object
- * @returns CLI command to install the plugin
- *
- * @example
- * getInstallCommand({ plugin: 'foo', github: 'owner/foo' })
- * // Returns: 'claude plugin add --git git@github.com:owner/foo.git'
- *
- * @example
- * getInstallCommand({ plugin: 'bar', marketplace: 'official' })
- * // Returns: 'claude plugin add bar --marketplace official'
+ * Determines install command for a plugin dependency
+ * Priority: custom install > github > fallback
  */
 export function getInstallCommand(dep: PluginDependency): string {
-  if (dep.install) {
-    return dep.install;
-  }
-
-  if (dep.marketplace) {
-    return `claude plugin add ${dep.plugin} --marketplace ${dep.marketplace}`;
-  }
-
-  if (dep.github) {
-    return `claude plugin add --git git@github.com:${dep.github}.git`;
-  }
-
-  return `claude plugin add ${dep.plugin}`;
+  return match(dep)
+    .with({ install: P.string }, (d) => d.install!)
+    .with({ github: P.string }, (d) => `claude plugin add --git git@github.com:${d.github}.git`)
+    .otherwise((d) => `claude plugin add ${d.plugin}`);
 }
 
 /**
- * Formats missing dependencies into a markdown message for display.
- *
- * @param missing - Array of missing dependencies
- * @param header - Section header text
- * @returns Array of formatted message lines
+ * Formats missing dependencies section
  */
-export function formatMissingDeps(missing: PluginDependency[], header: string): string[] {
-  const messages: string[] = [];
+export function formatMissingDependencies(missing: PluginDependency[], required: boolean): string {
+  const header = required
+    ? "**Missing Required Plugin Dependencies**"
+    : "**Missing Optional Plugin Dependencies**";
 
-  messages.push(header);
+  const lines = [header];
 
   for (const dep of missing) {
-    const desc = dep.description || "";
-    messages.push(`- **${dep.plugin}**${desc ? ` - ${desc}` : ""}`);
-    messages.push(`  \`${getInstallCommand(dep)}\``);
+    const desc = dep.description ? ` - ${dep.description}` : "";
+    lines.push(`- **${dep.plugin}**${desc}`);
+    lines.push(`  \`${getInstallCommand(dep)}\``);
   }
 
-  return messages;
+  return lines.join("\n");
+}
+
+/**
+ * Builds hook response from check result
+ * Returns empty object when everything is installed (completely silent)
+ */
+export function buildHookResponse(checkResult: CheckResult): HookResponse {
+  const hasRequired = checkResult.missingRequired.length > 0;
+  const hasOptional = checkResult.missingOptional.length > 0;
+
+  return match({ hasRequired, hasOptional })
+    .with({ hasRequired: false, hasOptional: false }, () => ({}))
+    .otherwise(() => {
+      const parts: string[] = [];
+
+      if (hasRequired) {
+        parts.push(formatMissingDependencies(checkResult.missingRequired, true));
+      }
+
+      if (hasOptional) {
+        parts.push(formatMissingDependencies(checkResult.missingOptional, false));
+      }
+
+      return { systemMessage: parts.join("\n\n") };
+    });
+}
+
+/**
+ * Builds error response for non-success config states
+ */
+export function buildErrorResponse(loadResult: ConfigLoadResult): HookResponse {
+  return match(loadResult)
+    .with({ status: "not_found" }, () => ({
+      systemMessage:
+        "No dependencies.yaml found. Run `anthropak init` to set up dependency checking.",
+    }))
+    .with({ status: "parse_error" }, () => ({
+      systemMessage: "dependencies.yaml has syntax errors. Run `anthropak validate` for details.",
+    }))
+    .with({ status: "validation_error" }, () => ({
+      systemMessage:
+        "dependencies.yaml has validation errors. Run `anthropak validate` for details.",
+    }))
+    .with({ status: "success" }, () => {
+      // This case should never be called with success, but TypeScript needs it
+      return {};
+    })
+    .exhaustive();
 }
