@@ -12,15 +12,26 @@ const command: CommandModule<object, UpdateOptions> = {
   command: "update [path]",
   describe: "Update hook script and hooks.json to latest version",
   builder: (yargs) =>
-    yargs.positional("path", {
-      describe: "Plugin/project root directory",
-      default: ".",
-      type: "string",
-    }),
+    yargs
+      .positional("path", {
+        describe: "Plugin/project root directory",
+        default: ".",
+        type: "string",
+      })
+      .option("yes", {
+        alias: "y",
+        describe: "Skip prompts and use defaults (non-interactive mode)",
+        type: "boolean",
+        default: false,
+      }),
   handler: async (argv) => {
     const root = resolve(argv.path);
 
-    p.intro("anthropak update");
+    // Handle intro based on --yes mode
+    match(argv.yes)
+      .with(true, () => p.log.info("anthropak update"))
+      .with(false, () => p.intro("anthropak update"))
+      .exhaustive();
 
     // Build file action list
     const fileActions: FileAction[] = [];
@@ -71,18 +82,25 @@ const command: CommandModule<object, UpdateOptions> = {
         .exhaustive();
     });
 
-    // Confirm before writing
-    const proceed = await p.confirm({
-      message: "Proceed?",
-      initialValue: false,
-    });
+    // Confirm before writing (skip if --yes)
+    const proceed = match(argv.yes)
+      .with(true, () => true)
+      .with(false, async () => {
+        const result = await p.confirm({
+          message: "Proceed?",
+          initialValue: false,
+        });
 
-    if (p.isCancel(proceed)) {
-      p.cancel("Operation cancelled");
-      process.exit(0);
-    }
+        if (p.isCancel(result)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
 
-    if (!proceed) {
+        return result;
+      })
+      .exhaustive();
+
+    if (!(await proceed)) {
       p.cancel("Operation cancelled");
       process.exit(0);
     }
@@ -122,7 +140,11 @@ const command: CommandModule<object, UpdateOptions> = {
 
     spinner.stop("Files written successfully");
 
-    p.outro("Done");
+    // Handle outro based on --yes mode
+    match(argv.yes)
+      .with(true, () => p.log.info("Done"))
+      .with(false, () => p.outro("Done"))
+      .exhaustive();
   },
 };
 

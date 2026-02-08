@@ -39,28 +39,45 @@ const command: CommandModule<object, InitOptions> = {
         describe: "Overwrite existing files",
         type: "boolean",
         default: false,
+      })
+      .option("yes", {
+        alias: "y",
+        describe: "Skip prompts and use defaults (non-interactive mode)",
+        type: "boolean",
+        default: false,
       }),
   handler: async (argv) => {
     const root = resolve(argv.path);
 
-    p.intro("anthropak init");
+    // Handle intro based on --yes mode
+    match(argv.yes)
+      .with(true, () => p.log.info("anthropak init"))
+      .with(false, () => p.intro("anthropak init"))
+      .exhaustive();
 
     // Detect mode
     const detectedMode = await detectMode(root);
     p.log.info(`Detected mode: ${detectedMode}`);
 
-    // Confirm mode
-    const useDetectedMode = await p.confirm({
-      message: `Use ${detectedMode} mode?`,
-      initialValue: true,
-    });
+    // Confirm mode (skip if --yes)
+    const useDetectedMode = match(argv.yes)
+      .with(true, () => true)
+      .with(false, async () => {
+        const result = await p.confirm({
+          message: `Use ${detectedMode} mode?`,
+          initialValue: true,
+        });
 
-    if (p.isCancel(useDetectedMode)) {
-      p.cancel("Operation cancelled");
-      process.exit(0);
-    }
+        if (p.isCancel(result)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
 
-    const mode: InitMode = match(useDetectedMode)
+        return result;
+      })
+      .exhaustive();
+
+    const mode: InitMode = match(await useDetectedMode)
       .with(true, () => detectedMode)
       .with(false, () =>
         match(detectedMode)
@@ -70,7 +87,10 @@ const command: CommandModule<object, InitOptions> = {
       )
       .exhaustive();
 
-    p.log.info(`Mode: ${mode}`);
+    match(argv.yes)
+      .with(true, () => p.log.info(`Mode: ${mode} (auto)`))
+      .with(false, () => p.log.info(`Mode: ${mode}`))
+      .exhaustive();
 
     // Build file action list
     const fileActions: FileAction[] = [];
@@ -141,18 +161,25 @@ const command: CommandModule<object, InitOptions> = {
         .exhaustive();
     });
 
-    // Confirm before writing
-    const proceed = await p.confirm({
-      message: "Proceed?",
-      initialValue: false,
-    });
+    // Confirm before writing (skip if --yes)
+    const proceed = match(argv.yes)
+      .with(true, () => true)
+      .with(false, async () => {
+        const result = await p.confirm({
+          message: "Proceed?",
+          initialValue: false,
+        });
 
-    if (p.isCancel(proceed)) {
-      p.cancel("Operation cancelled");
-      process.exit(0);
-    }
+        if (p.isCancel(result)) {
+          p.cancel("Operation cancelled");
+          process.exit(0);
+        }
 
-    if (!proceed) {
+        return result;
+      })
+      .exhaustive();
+
+    if (!(await proceed)) {
       p.cancel("Operation cancelled");
       process.exit(0);
     }
@@ -203,7 +230,11 @@ const command: CommandModule<object, InitOptions> = {
 
     spinner.stop("Files written successfully");
 
-    p.outro("Edit dependencies.yaml to declare your dependencies.");
+    // Handle outro based on --yes mode
+    match(argv.yes)
+      .with(true, () => p.log.info("Edit dependencies.yaml to declare your dependencies."))
+      .with(false, () => p.outro("Edit dependencies.yaml to declare your dependencies."))
+      .exhaustive();
   },
 };
 
