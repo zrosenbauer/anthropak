@@ -1,23 +1,23 @@
 # Project State: Anthropak
 
-**Last Updated:** 2026-02-06
+**Last Updated:** 2026-02-07
 
 ## Project Reference
 
 **Core Value:** When a plugin loads, the user immediately knows what's missing and how to install it
 
-**Current Focus:** Phase 1 (Core Rebuild) complete — ready for Phase 2 planning
+**Current Focus:** Phase 2 (CLI Tool Dependencies) in progress
 
 ---
 
 ## Current Position
 
-**Phase:** 1 of 3 (Core Rebuild)
-**Plan:** 3 of 3 in current phase
-**Status:** Phase complete
-**Last activity:** 2026-02-06 - Completed 01-03-PLAN.md
+**Phase:** 2 of 3 (CLI Tool Dependencies)
+**Plan:** 2 of 3 in current phase
+**Status:** In progress
+**Last activity:** 2026-02-07 - Completed 02-02-PLAN.md
 
-**Progress:** `[█████████░░░░░░░░░░░]` 100% (3/3 plans in Phase 1 complete)
+**Progress:** `[█████████████░░░░░░░]` 50% (5/9 plans completed across all phases)
 
 ---
 
@@ -51,6 +51,10 @@
 | 2026-02-06 | Default 'No' for confirmations (01-02)               | Safety before filesystem mutations per CONTEXT.md         | All confirm() prompts default to false                  |
 | 2026-02-06 | Use match(P.nullish) for attemptAsync errors (01-03) | attemptAsync returns [Error, undefined] or [null, T]      | Standard pattern for crash-proof error checking         |
 | 2026-02-06 | 'as const' assertions for literal returns (01-03)    | Ensures TypeScript infers correct discriminated unions    | Type-safe action selection in init/update commands      |
+| 2026-02-07 | Field name cli_tools (not cli) (02-02)               | CONTEXT.md specifies cli_tools as YAML key                | Both packages use cli_tools field consistently          |
+| 2026-02-07 | DependencyEntry union type (02-02)                   | Support both PluginDependency and CliToolDependency       | Type assertions in checkers handle union correctly      |
+| 2026-02-07 | --yes mode quieter output (02-02)                    | CI/agent logs don't need terminal decoration              | log.info instead of intro/outro in non-interactive mode |
+| 2026-02-07 | Non-interactive guard pattern (02-02)                | Consistent approach across all prompts                    | match(argv.yes) pattern guards all stdin reads          |
 
 ### Open Questions
 
@@ -76,33 +80,30 @@
 
 ## Session Continuity
 
-**Last session:** 2026-02-06T22:50:40Z
-**Stopped at:** Completed 01-03-PLAN.md (Phase 1 Complete)
+**Last session:** 2026-02-07T02:49:41Z
+**Stopped at:** Completed 02-02-PLAN.md
 **Resume file:** None
 
 ### What Just Happened
 
-Completed 01-03-PLAN.md: Ternary elimination for 100% HARD-01 compliance
+Completed 02-02-PLAN.md: CLI non-interactive mode with cli_tools template
 
-- Eliminated all 9 remaining ternary operators across hook and CLI packages
-- Replaced with ts-pattern match() expressions for consistent control flow
-- Achieved 100% HARD-01 compliance: zero ternaries, zero nested conditionals
-- Established reusable match() patterns for common operations
-- 26 .exhaustive() calls, 16 .otherwise() calls across codebase
-- Build and typecheck pass with no errors
-- Phase 1 Core Rebuild now complete (3/3 plans executed)
+- Added --yes flag to init and update commands for CI/agent workflows
+- Updated dependencies.yaml template with cli_tools section and commented examples
+- Added CLI-side validation for cli_tools entries (name and install required)
+- Implemented non-interactive guard pattern: match(argv.yes) before all prompts
+- Fixed hook types to use DependencyEntry union (unblocked CLI build)
+- All commands run without stdin reads when --yes is passed
+- Quieter output in --yes mode for cleaner CI logs
 
 ### What's Next
 
-**Phase 1 Complete!** Ready to plan Phase 2 (CLI Tools)
+Continue Phase 2 (CLI Tool Dependencies):
 
-Phase 2 will implement:
+- Plan 02-03: CLI status command for checking CLI tool dependencies
+- Remaining Phase 2 plans for full CLI tool support
 
-- `anthropak validate` command for config validation
-- `anthropak status` command for dependency checking
-- CLI tools for managing CLI/MCP dependencies (structure validation)
-
-No blockers. All foundation patterns established in Phase 1.
+No blockers. Non-interactive mode pattern established.
 
 ---
 
