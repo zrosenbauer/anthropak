@@ -1,4 +1,9 @@
-import type { DependenciesConfig, InstalledPluginsRegistry, CheckResult } from "../types.js";
+import type {
+  DependenciesConfig,
+  InstalledPluginsRegistry,
+  CheckResult,
+  PluginDependency,
+} from "../types.js";
 import { isPluginInstalled } from "../lib/registry.js";
 
 /**
@@ -14,11 +19,15 @@ export function checkPlugins(
     return { missingRequired: [], missingOptional: [] };
   }
 
-  const missingRequired = config.plugins.required.filter(
+  // Cast to PluginDependency[] since plugins section contains only plugin entries
+  const required = config.plugins.required as PluginDependency[];
+  const optional = config.plugins.optional as PluginDependency[];
+
+  const missingRequired = required.filter(
     (dep) => !isPluginInstalled(registry, dep.plugin, projectDir),
   );
 
-  const missingOptional = config.plugins.optional.filter(
+  const missingOptional = optional.filter(
     (dep) => !isPluginInstalled(registry, dep.plugin, projectDir),
   );
 

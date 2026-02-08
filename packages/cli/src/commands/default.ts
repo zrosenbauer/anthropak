@@ -34,10 +34,10 @@ const command: CommandModule<object, DefaultArgs> = {
 
     match(initialized)
       .with(true, () => {
-        update.handler({ ...argv, _: [], $0: "" });
+        update.handler({ ...argv, yes: false, _: [], $0: "" });
       })
       .with(false, () => {
-        init.handler({ ...argv, force: false, _: [], $0: "" });
+        init.handler({ ...argv, force: false, yes: false, _: [], $0: "" });
       })
       .exhaustive();
   },

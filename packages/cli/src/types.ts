@@ -8,7 +8,7 @@
 export interface DependenciesConfig {
   version: 1;
   plugins?: EcosystemSection;
-  cli?: EcosystemSection;
+  cli_tools?: EcosystemSection;
   mcp?: EcosystemSection;
 }
 
@@ -22,6 +22,11 @@ export interface PluginDependency {
   github?: string;
   install?: string;
   description?: string;
+}
+
+export interface CliToolDependency {
+  name: string;
+  install: string;
 }
 
 // Phase 1: DependencyEntry is same as PluginDependency
@@ -47,10 +52,12 @@ export type InitMode = "plugin" | "repo";
 export interface InitOptions {
   path: string;
   force: boolean;
+  yes: boolean;
 }
 
 export interface UpdateOptions {
   path: string;
+  yes: boolean;
 }
 
 export interface ValidateOptions {

@@ -28,9 +28,8 @@ export interface CliToolDependency {
   install: string;
 }
 
-// Phase 1: DependencyEntry is same as PluginDependency
-// CLI and MCP entries will extend in later phases
-export type DependencyEntry = PluginDependency;
+// Phase 2: DependencyEntry now includes CLI tool dependencies
+export type DependencyEntry = PluginDependency | CliToolDependency;
 
 // Discriminated union for validation results
 export type ValidationResult =

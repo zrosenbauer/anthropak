@@ -19,10 +19,15 @@ plugins:
   #    install: "claude plugin add ..."
   #    description: "What this plugin does"
 
-# CLI tool dependencies (Phase 2 - not yet implemented)
-# cli:
-#   required: []
-#   optional: []
+# CLI tool dependencies
+cli_tools:
+  required: []
+  #  - name: "docker"                           # Required: tool name
+  #    install: "brew install docker"            # Required: install instructions
+
+  optional: []
+  #  - name: "terraform"
+  #    install: "brew install terraform"
 
 # MCP server dependencies (Phase 3 - not yet implemented)
 # mcp:
