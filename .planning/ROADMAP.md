@@ -65,6 +65,13 @@ Plans:
 4. User running `anthropak init --yes` skips prompts and uses defaults (agent/CI mode)
 5. CLI tool detection works consistently across macOS, Linux, and Windows (spaces in paths handled)
 
+**Plans:** 2 plans
+
+Plans:
+
+- [ ] 02-01-PLAN.md — Hook: CLI tool detection utility, checker, config validation, output formatting
+- [ ] 02-02-PLAN.md — CLI: --yes flag for non-interactive mode, template update with cli_tools section
+
 ---
 
 ### Phase 3: MCP Server Dependencies
@@ -96,7 +103,7 @@ Plans:
 | Phase                       | Status   | Requirements | Success Criteria |
 | --------------------------- | -------- | ------------ | ---------------- |
 | 1 - Core Rebuild            | Complete | 6            | 5                |
-| 2 - CLI Tool Dependencies   | Pending  | 5            | 5                |
+| 2 - CLI Tool Dependencies   | Planned  | 5            | 5                |
 | 3 - MCP Server Dependencies | Pending  | 5            | 5                |
 
 **Total:** 3 phases, 16 requirements, 15 success criteria
@@ -107,10 +114,11 @@ Plans:
 
 1. ~~Execute Phase 1 plans~~ ✓
 2. ~~Verify Phase 1 success criteria~~ ✓
-3. Plan Phase 2 with `/gsd:plan-phase 2`
-4. Execute Phase 2 plans
+3. ~~Plan Phase 2 with `/gsd:plan-phase 2`~~ ✓
+4. Execute Phase 2 plans with `/gsd:execute-phase 2`
+5. Verify Phase 2 success criteria
 
 ---
 
 _Roadmap created: 2026-02-06_
-_Last updated: 2026-02-06 (Phase 1 complete — all 3 plans executed, verified)_
+_Last updated: 2026-02-07 (Phase 2 planned — 2 plans in 1 wave)_
