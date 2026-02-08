@@ -4,23 +4,11 @@
 
 A CLI tool and hook system that lets Claude Code plugins declare and check for dependencies on other plugins. When a plugin depends on MCP servers or other Claude Code plugins, anthropak ensures users are notified about missing dependencies.
 
-- 📦 **Plugin dependency checking** — declare required and optional plugin dependencies, verified against Claude Code's installed plugins registry
+- 📦 **Plugin dependency checking** — verify required and optional plugins against Claude Code's registry
 - 🔧 **CLI tool detection** — ensure CLI tools your plugin needs are available on `$PATH`
-- 🔌 **MCP server checking** _(coming soon)_ — verify required MCP servers are configured and available
-- 🪝 **Zero-config hook** — single-file hook script that runs automatically when Claude Code loads your plugin
-- 🚀 **Scaffold in seconds** — `anthropak init` sets up `dependencies.yaml`, the hook script, and `hooks.json` in one command
-- 🔄 **Easy updates** — `anthropak update` keeps the hook script in sync with the latest version
-- ✅ **Config validation** — `anthropak validate` catches config errors before your users do
-- 🤖 **Automation-friendly** — all commands support `--non-interactive` mode for scripted workflows
-
-## Table of Contents
-
-- [Install](#install)
-- [Usage](#usage)
-- [Packages](#packages)
-- [How It Works](#how-it-works)
-- [Contributing](#contributing)
-- [License](#license)
+- 🔌 **MCP server checking** _(coming soon)_ — verify required MCP servers are configured
+- 🪝 **Zero-config hook** — single-file hook that runs automatically when Claude Code loads your plugin
+- 🚀 **Scaffold in seconds** — `anthropak init` sets up everything in one command
 
 ## Install
 
