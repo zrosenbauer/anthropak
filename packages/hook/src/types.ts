@@ -3,10 +3,14 @@
 export interface DependenciesConfig {
   version: 1;
   plugins?: EcosystemSection;
-  cli?: EcosystemSection;
+  cli_tools?: EcosystemSection; // Phase 2: Renamed from 'cli' per CONTEXT.md
   mcp?: EcosystemSection;
 }
 
+// Generic ecosystem section - entries vary by ecosystem
+// plugins entries: PluginDependency shape
+// cli_tools entries: CliToolDependency shape
+// mcp entries: (Phase 3)
 export interface EcosystemSection {
   required: DependencyEntry[];
   optional: DependencyEntry[];
@@ -17,6 +21,11 @@ export interface PluginDependency {
   github?: string;
   install?: string;
   description?: string;
+}
+
+export interface CliToolDependency {
+  name: string;
+  install: string;
 }
 
 // Phase 1: DependencyEntry is same as PluginDependency
@@ -52,4 +61,11 @@ export interface HookResponse {
 export interface CheckResult {
   missingRequired: PluginDependency[];
   missingOptional: PluginDependency[];
+}
+
+export interface CliToolCheckResult {
+  missingRequired: CliToolDependency[];
+  missingOptional: CliToolDependency[];
+  totalRequired: number;
+  totalOptional: number;
 }

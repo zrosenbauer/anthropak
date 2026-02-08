@@ -74,13 +74,13 @@ export function validateConfig(raw: unknown): ConfigLoadResult {
 
   // At least one ecosystem section must be present
   const hasPlugins = "plugins" in obj;
-  const hasCli = "cli" in obj;
+  const hasCliTools = "cli_tools" in obj;
   const hasMcp = "mcp" in obj;
 
-  if (!hasPlugins && !hasCli && !hasMcp) {
+  if (!hasPlugins && !hasCliTools && !hasMcp) {
     return {
       status: "validation_error",
-      errors: ["At least one ecosystem section (plugins, cli, mcp) must be present"],
+      errors: ["At least one ecosystem section (plugins, cli_tools, mcp) must be present"],
     };
   }
 
@@ -96,13 +96,13 @@ export function validateConfig(raw: unknown): ConfigLoadResult {
     }
   }
 
-  // Validate cli section if present (structure only for Phase 1)
-  if (hasCli) {
-    const cliResult = validateEcosystemSection(obj.cli, "cli");
-    if (cliResult.errors.length > 0) {
-      errors.push(...cliResult.errors);
+  // Validate cli_tools section if present (Phase 2)
+  if (hasCliTools) {
+    const cliToolsResult = validateEcosystemSection(obj.cli_tools, "cli_tools");
+    if (cliToolsResult.errors.length > 0) {
+      errors.push(...cliToolsResult.errors);
     } else {
-      config.cli = cliResult.section;
+      config.cli_tools = cliToolsResult.section;
     }
   }
 
@@ -187,7 +187,43 @@ function validateEcosystemSection(
     };
   }
 
-  // For cli/mcp sections, just validate structure (Phase 2/3)
+  // For cli_tools section, validate entries deeply (Phase 2)
+  if (name === "cli_tools") {
+    const validatedRequired = [];
+    const validatedOptional = [];
+
+    for (let i = 0; i < required.length; i++) {
+      const entryErrors = validateCliToolEntry(required[i], `${name}.required[${i}]`);
+      if (entryErrors.length > 0) {
+        errors.push(...entryErrors);
+      } else {
+        validatedRequired.push(required[i]);
+      }
+    }
+
+    for (let i = 0; i < optional.length; i++) {
+      const entryErrors = validateCliToolEntry(optional[i], `${name}.optional[${i}]`);
+      if (entryErrors.length > 0) {
+        errors.push(...entryErrors);
+      } else {
+        validatedOptional.push(optional[i]);
+      }
+    }
+
+    if (errors.length > 0) {
+      return { errors };
+    }
+
+    return {
+      section: {
+        required: validatedRequired,
+        optional: validatedOptional,
+      },
+      errors: [],
+    };
+  }
+
+  // For mcp sections, just validate structure (Phase 3)
   return {
     section: {
       required: required as any[],
@@ -226,6 +262,39 @@ function validatePluginEntry(entry: unknown, path: string): string[] {
         errors.push(`${path}.${field} must be a string`);
       }
     }
+  }
+
+  return errors;
+}
+
+/**
+ * Validates a CLI tool entry
+ */
+function validateCliToolEntry(entry: unknown, path: string): string[] {
+  const errors: string[] = [];
+
+  if (typeof entry !== "object" || entry === null) {
+    return [`${path} must be an object`];
+  }
+
+  const obj = entry as Record<string, unknown>;
+
+  // name field is required
+  if (!("name" in obj)) {
+    errors.push(`${path}: missing required field 'name'`);
+  } else if (typeof obj.name !== "string") {
+    errors.push(`${path}.name must be a string`);
+  } else if (obj.name.trim() === "") {
+    errors.push(`${path}.name must be non-empty`);
+  }
+
+  // install field is required
+  if (!("install" in obj)) {
+    errors.push(`${path}: missing required field 'install'`);
+  } else if (typeof obj.install !== "string") {
+    errors.push(`${path}.install must be a string`);
+  } else if (obj.install.trim() === "") {
+    errors.push(`${path}.install must be non-empty`);
   }
 
   return errors;

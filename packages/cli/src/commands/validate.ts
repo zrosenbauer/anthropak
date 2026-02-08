@@ -43,7 +43,7 @@ const command: CommandModule<object, ValidateOptions> = {
         });
         p.log.info("\nSuggestions:");
         p.log.info("  • Ensure version: 1 is present");
-        p.log.info("  • Include at least one ecosystem section (plugins, cli, or mcp)");
+        p.log.info("  • Include at least one ecosystem section (plugins, cli_tools, or mcp)");
         p.log.info("  • Each section must have required and optional arrays");
         p.log.info("  • Each plugin entry must have a 'plugin' field (string)");
         p.outro("Validation failed");
@@ -55,8 +55,8 @@ const command: CommandModule<object, ValidateOptions> = {
           optional: config.plugins?.optional.length ?? 0,
         };
         const cliCount = {
-          required: config.cli?.required.length ?? 0,
-          optional: config.cli?.optional.length ?? 0,
+          required: config.cli_tools?.required.length ?? 0,
+          optional: config.cli_tools?.optional.length ?? 0,
         };
         const mcpCount = {
           required: config.mcp?.required.length ?? 0,
@@ -71,7 +71,7 @@ const command: CommandModule<object, ValidateOptions> = {
             `  Plugins: ${pluginCount.required} required, ${pluginCount.optional} optional`,
           );
         }
-        if (config.cli) {
+        if (config.cli_tools) {
           p.log.info(`  CLI tools: ${cliCount.required} required, ${cliCount.optional} optional`);
         }
         if (config.mcp) {
