@@ -4,6 +4,7 @@ import { readStdin } from "./lib/io.js";
 import { loadConfig } from "./lib/config.js";
 import { loadInstalledPlugins } from "./lib/registry.js";
 import { checkPlugins } from "./checkers/plugins.js";
+import { checkCliTools } from "./checkers/cli-tools.js";
 import { buildHookResponse, buildErrorResponse } from "./lib/output.js";
 import { PLUGIN_ROOT, PROJECT_DIR, INSTALLED_PLUGINS_PATH } from "./lib/constants.js";
 
@@ -21,7 +22,8 @@ import { PLUGIN_ROOT, PROJECT_DIR, INSTALLED_PLUGINS_PATH } from "./lib/constant
       .with({ status: "success" }, async ({ config }) => {
         const registry = await loadInstalledPlugins(INSTALLED_PLUGINS_PATH);
         const checkResult = checkPlugins(config, registry, PROJECT_DIR);
-        return buildHookResponse(checkResult);
+        const cliToolResult = await checkCliTools(config);
+        return buildHookResponse(checkResult, cliToolResult);
       })
       .with({ status: "not_found" }, () => buildErrorResponse(loadResult))
       .with({ status: "parse_error" }, () => buildErrorResponse(loadResult))
