@@ -13,11 +13,11 @@
 ## Current Position
 
 **Phase:** 2 of 3 (CLI Tool Dependencies)
-**Plan:** 2 of 3 in current phase
+**Plan:** 1 of 3 in current phase
 **Status:** In progress
-**Last activity:** 2026-02-07 - Completed 02-02-PLAN.md
+**Last activity:** 2026-02-07 - Completed 02-01-PLAN.md
 
-**Progress:** `[█████████████░░░░░░░]` 50% (5/9 plans completed across all phases)
+**Progress:** `[████████████░░░░░░░░]` 44% (4/9 plans completed across all phases)
 
 ---
 
@@ -51,10 +51,10 @@
 | 2026-02-06 | Default 'No' for confirmations (01-02)               | Safety before filesystem mutations per CONTEXT.md         | All confirm() prompts default to false                  |
 | 2026-02-06 | Use match(P.nullish) for attemptAsync errors (01-03) | attemptAsync returns [Error, undefined] or [null, T]      | Standard pattern for crash-proof error checking         |
 | 2026-02-06 | 'as const' assertions for literal returns (01-03)    | Ensures TypeScript infers correct discriminated unions    | Type-safe action selection in init/update commands      |
-| 2026-02-07 | Field name cli_tools (not cli) (02-02)               | CONTEXT.md specifies cli_tools as YAML key                | Both packages use cli_tools field consistently          |
-| 2026-02-07 | DependencyEntry union type (02-02)                   | Support both PluginDependency and CliToolDependency       | Type assertions in checkers handle union correctly      |
-| 2026-02-07 | --yes mode quieter output (02-02)                    | CI/agent logs don't need terminal decoration              | log.info instead of intro/outro in non-interactive mode |
-| 2026-02-07 | Non-interactive guard pattern (02-02)                | Consistent approach across all prompts                    | match(argv.yes) pattern guards all stdin reads          |
+| 2026-02-07 | Field name cli_tools (not cli) (02-01)               | CONTEXT.md specifies cli_tools as YAML key                | Both packages use cli_tools field consistently          |
+| 2026-02-07 | 3-second timeout per tool check (02-01)              | Detection should fail fast if tool lookup hangs           | setTimeout wrapping execFile callback                   |
+| 2026-02-07 | Parallel tool execution (02-01)                      | Avoid N×timeout worst case for N tools                    | Promise.all mapping over all tools                      |
+| 2026-02-07 | Match pattern for optional parameters (02-01)        | Zero-ternary policy requires match() for conditionals     | match(P.not(P.nullish)) pattern established             |
 
 ### Open Questions
 
@@ -80,30 +80,31 @@
 
 ## Session Continuity
 
-**Last session:** 2026-02-07T02:49:41Z
-**Stopped at:** Completed 02-02-PLAN.md
+**Last session:** 2026-02-07T21:50:24Z
+**Stopped at:** Completed 02-01-PLAN.md
 **Resume file:** None
 
 ### What Just Happened
 
-Completed 02-02-PLAN.md: CLI non-interactive mode with cli_tools template
+Completed 02-01-PLAN.md: CLI tool dependency detection for hook package
 
-- Added --yes flag to init and update commands for CI/agent workflows
-- Updated dependencies.yaml template with cli_tools section and commented examples
-- Added CLI-side validation for cli_tools entries (name and install required)
-- Implemented non-interactive guard pattern: match(argv.yes) before all prompts
-- Fixed hook types to use DependencyEntry union (unblocked CLI build)
-- All commands run without stdin reads when --yes is passed
-- Quieter output in --yes mode for cleaner CI logs
+- Implemented cross-platform CLI tool detection (which/where) with 3s timeout
+- Created checkCliTools checker with parallel execution via Promise.all
+- Added CLI tool config validation (name + install fields required)
+- Integrated CLI tool checking into hook systemMessage output
+- Renamed DependenciesConfig.cli to cli_tools per CONTEXT.md
+- Zero ternaries, zero try-catch in all new code (100% HARD-01 compliance)
+- Hook package builds and typechecks cleanly
 
 ### What's Next
 
 Continue Phase 2 (CLI Tool Dependencies):
 
-- Plan 02-03: CLI status command for checking CLI tool dependencies
+- Plan 02-02: Non-interactive mode (--yes flag)
+- Plan 02-03: CLI status command
 - Remaining Phase 2 plans for full CLI tool support
 
-No blockers. Non-interactive mode pattern established.
+No blockers. CLI tool detection infrastructure complete.
 
 ---
 
