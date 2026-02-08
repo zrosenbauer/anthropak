@@ -15,10 +15,10 @@
 
 ### CLI Tool Dependencies
 
-- [ ] **CTOOL-01**: dependencies.yaml schema supports `cli_tools` section with required/optional arrays
-- [ ] **CTOOL-02**: Hook checks CLI tool presence via `which` package (cross-platform PATH check)
-- [ ] **CTOOL-03**: Missing CLI tools reported in systemMessage with install guidance
-- [ ] **CTOOL-04**: `anthropak init` scaffolds CLI tool dependencies in dependencies.yaml
+- [x] **CTOOL-01**: dependencies.yaml schema supports `cli_tools` section with required/optional arrays
+- [x] **CTOOL-02**: Hook checks CLI tool presence via `which` package (cross-platform PATH check)
+- [x] **CTOOL-03**: Missing CLI tools reported in systemMessage with install guidance
+- [x] **CTOOL-04**: `anthropak init` scaffolds CLI tool dependencies in dependencies.yaml
 
 ### MCP Server Dependencies
 
@@ -30,7 +30,7 @@
 ### CLI Experience
 
 - [x] **CLI-01**: CLI prompts for confirmation before any filesystem mutations
-- [ ] **CLI-02**: CLI supports non-interactive mode (flag) for agent/CI usage — skips prompts, assumes defaults
+- [x] **CLI-02**: CLI supports non-interactive mode (flag) for agent/CI usage — skips prompts, assumes defaults
 - [ ] **CLI-03**: CLI provides status/list command showing declared dependencies and their found/missing state (one-level-deep visualization)
 
 ## v2 Requirements
@@ -72,11 +72,11 @@
 | HARD-04     | Phase 1 | Complete |
 | HARD-05     | Phase 1 | Complete |
 | CLI-01      | Phase 1 | Complete |
-| CTOOL-01    | Phase 2 | Pending  |
-| CTOOL-02    | Phase 2 | Pending  |
-| CTOOL-03    | Phase 2 | Pending  |
-| CTOOL-04    | Phase 2 | Pending  |
-| CLI-02      | Phase 2 | Pending  |
+| CTOOL-01    | Phase 2 | Complete |
+| CTOOL-02    | Phase 2 | Complete |
+| CTOOL-03    | Phase 2 | Complete |
+| CTOOL-04    | Phase 2 | Complete |
+| CLI-02      | Phase 2 | Complete |
 | MCP-01      | Phase 3 | Pending  |
 | MCP-02      | Phase 3 | Pending  |
 | MCP-03      | Phase 3 | Pending  |
@@ -92,4 +92,4 @@
 ---
 
 _Requirements defined: 2026-02-06_
-_Last updated: 2026-02-06 — Phase 1 requirements complete_
+_Last updated: 2026-02-07 — Phase 2 requirements complete_

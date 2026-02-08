@@ -69,8 +69,8 @@ Plans:
 
 Plans:
 
-- [ ] 02-01-PLAN.md — Hook: CLI tool detection utility, checker, config validation, output formatting
-- [ ] 02-02-PLAN.md — CLI: --yes flag for non-interactive mode, template update with cli_tools section
+- [x] 02-01-PLAN.md — Hook: CLI tool detection utility, checker, config validation, output formatting
+- [x] 02-02-PLAN.md — CLI: --yes flag for non-interactive mode, template update with cli_tools section
 
 ---
 
@@ -103,7 +103,7 @@ Plans:
 | Phase                       | Status   | Requirements | Success Criteria |
 | --------------------------- | -------- | ------------ | ---------------- |
 | 1 - Core Rebuild            | Complete | 6            | 5                |
-| 2 - CLI Tool Dependencies   | Planned  | 5            | 5                |
+| 2 - CLI Tool Dependencies   | Complete | 5            | 5                |
 | 3 - MCP Server Dependencies | Pending  | 5            | 5                |
 
 **Total:** 3 phases, 16 requirements, 15 success criteria
@@ -115,10 +115,11 @@ Plans:
 1. ~~Execute Phase 1 plans~~ ✓
 2. ~~Verify Phase 1 success criteria~~ ✓
 3. ~~Plan Phase 2 with `/gsd:plan-phase 2`~~ ✓
-4. Execute Phase 2 plans with `/gsd:execute-phase 2`
-5. Verify Phase 2 success criteria
+4. ~~Execute Phase 2 plans with `/gsd:execute-phase 2`~~ ✓
+5. ~~Verify Phase 2 success criteria~~ ✓
+6. Plan Phase 3 with `/gsd:discuss-phase 3`
 
 ---
 
 _Roadmap created: 2026-02-06_
-_Last updated: 2026-02-07 (Phase 2 planned — 2 plans in 1 wave)_
+_Last updated: 2026-02-07 (Phase 2 complete — all 2 plans executed, verified)_
