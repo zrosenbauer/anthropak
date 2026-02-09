@@ -3,8 +3,7 @@
   "private": true,
   "scripts": {
     "build": "turbo build",
-    "build:bin": "turbo build:bin",
-    "build:formula": "./scripts/build-formula.ts",
+    "bundle": "./scripts/bundle.sh",
     "changeset": "changeset",
     "clean": "turbo clean",
     "dev": "turbo dev",

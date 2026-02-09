@@ -49,13 +49,13 @@ anthropak update
 
 Initialize plugin dependency management in a directory.
 
-| Option    | Alias | Description                          |
-| --------- | ----- | ------------------------------------ |
-| `--force` | `-f`  | Overwrite existing dependencies.yaml |
+| Option    | Alias | Description                       |
+| --------- | ----- | --------------------------------- |
+| `--force` | `-f`  | Overwrite existing anthropak.yaml |
 
 Creates:
 
-- `dependencies.yaml` - Dependency declarations
+- `anthropak.yaml` - Dependency declarations (in `.claude-plugin/` for plugins, `.claude/` for repos)
 - `hook/anthropak.mjs` - Hook script
 - Updates `hooks.json` - Registers the hook
 
@@ -65,7 +65,7 @@ Update the hook script and hooks.json to the latest version.
 
 ## Configuration
 
-### dependencies.yaml
+### anthropak.yaml
 
 ```yaml
 dependencies:

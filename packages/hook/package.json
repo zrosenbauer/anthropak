@@ -18,7 +18,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "confbox": "^0.2.2",
+    "@anthropak/utils": "workspace:*",
     "es-toolkit": "^1.44.0",
     "ts-pattern": "^5.5.0"
   },

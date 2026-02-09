@@ -30,12 +30,12 @@ Anthropak is a CLI tool and hook system that lets Claude Code plugins declare an
 
 ## CLI Commands
 
-- `anthropak init [path]` - Scaffolds dependencies.yaml, hook script, updates hooks.json
+- `anthropak init [path]` - Scaffolds anthropak.yaml, hook script, updates hooks.json
 - `anthropak update [path]` - Updates hook script to latest version
 
 ## Hook Flow
 
-1. Reads `dependencies.yaml` from plugin root
+1. Reads `anthropak.yaml` from `.claude-plugin/` or `.claude/`
 2. Validates config structure
 3. Loads Claude's `installed_plugins.json` registry
 4. Checks if declared dependencies are installed

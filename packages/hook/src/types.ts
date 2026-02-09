@@ -1,45 +1,14 @@
-// New nested schema types for version 1
-
-export interface DependenciesConfig {
-  version: 1;
-  plugins?: EcosystemSection;
-  cli_tools?: EcosystemSection; // Phase 2: Renamed from 'cli' per CONTEXT.md
-  mcp?: EcosystemSection;
-}
-
-// Generic ecosystem section - entries vary by ecosystem
-// plugins entries: PluginDependency shape
-// cli_tools entries: CliToolDependency shape
-// mcp entries: (Phase 3)
-export interface EcosystemSection {
-  required: DependencyEntry[];
-  optional: DependencyEntry[];
-}
-
-export interface PluginDependency {
-  plugin: string;
-  github?: string;
-  install?: string;
-  description?: string;
-}
-
-export interface CliToolDependency {
-  name: string;
-  install: string;
-}
-
-// Phase 2: DependencyEntry now includes CLI tool dependencies
-export type DependencyEntry = PluginDependency | CliToolDependency;
-
-// Discriminated union for validation results
-export type ValidationResult =
-  | { status: "success"; config: DependenciesConfig }
-  | { status: "not_found" }
-  | { status: "parse_error"; message: string }
-  | { status: "validation_error"; errors: string[] };
-
-// Alias for config loading (same structure)
-export type ConfigLoadResult = ValidationResult;
+// Re-export shared types from utils
+import type { PluginDependency, CliToolDependency } from "@anthropak/utils";
+export type {
+  DependenciesConfig,
+  EcosystemSection,
+  PluginDependency,
+  CliToolDependency,
+  DependencyEntry,
+  ValidationResult,
+  ConfigLoadResult,
+} from "@anthropak/utils";
 
 // Registry types
 export interface InstalledPluginsRegistry {
@@ -52,8 +21,38 @@ export interface PluginInstallation {
 }
 
 // Hook response
-export interface HookResponse {
-  systemMessage?: string;
+export interface SessionStartResponse {
+  systemMessage: string;
+  hookSpecificOutput: {
+    hookEventName: "SessionStart";
+    additionalContext: string;
+  };
+}
+
+export interface UserPromptSubmitBlockResponse {
+  decision: "block";
+  reason: string;
+}
+
+export type HookResponse =
+  | Record<string, never>
+  | SessionStartResponse
+  | UserPromptSubmitBlockResponse;
+
+export interface HookStdinData {
+  hook_event_name: string;
+  session_id: string;
+  [key: string]: unknown;
+}
+
+export interface CacheData {
+  blocked: boolean;
+  reason: string;
+}
+
+export interface DependencyCheckResult {
+  response: HookResponse;
+  cache: CacheData;
 }
 
 // Check result

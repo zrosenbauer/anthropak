@@ -1,10 +1,11 @@
 import { attemptAsync } from "es-toolkit";
+import type { HookStdinData } from "../types.js";
 
 /**
  * Reads stdin data from Claude Code hook invocation
  * Returns null on error (hook doesn't need stdin content for dependency checking)
  */
-export async function readStdin(): Promise<unknown | null> {
+export async function readStdin(): Promise<HookStdinData | null> {
   const [error, data] = await attemptAsync(async () => {
     return new Promise((resolve, reject) => {
       let buffer = "";
@@ -15,7 +16,7 @@ export async function readStdin(): Promise<unknown | null> {
       });
 
       process.stdin.on("end", () => {
-        resolve(JSON.parse(buffer));
+        resolve(JSON.parse(buffer) as HookStdinData);
       });
 
       process.stdin.on("error", reject);
@@ -26,5 +27,5 @@ export async function readStdin(): Promise<unknown | null> {
     return null;
   }
 
-  return data;
+  return data as HookStdinData;
 }

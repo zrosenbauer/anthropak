@@ -1,53 +1,15 @@
-// CLI-specific types and re-exported hook types
-// Hook types duplicated here since CLI and hook are separate runtime packages
+// Re-export shared types from utils
+export type {
+  DependenciesConfig,
+  EcosystemSection,
+  PluginDependency,
+  CliToolDependency,
+  DependencyEntry,
+  ValidationResult,
+  ConfigLoadResult,
+} from "@anthropak/utils";
 
-// ============================================================================
-// Schema types (synced with hook package)
-// ============================================================================
-
-export interface DependenciesConfig {
-  version: 1;
-  plugins?: EcosystemSection;
-  cli_tools?: EcosystemSection;
-  mcp?: EcosystemSection;
-}
-
-export interface EcosystemSection {
-  required: DependencyEntry[];
-  optional: DependencyEntry[];
-}
-
-export interface PluginDependency {
-  plugin: string;
-  github?: string;
-  install?: string;
-  description?: string;
-}
-
-export interface CliToolDependency {
-  name: string;
-  install: string;
-}
-
-// Phase 1: DependencyEntry is same as PluginDependency
-// CLI and MCP entries will extend in later phases
-export type DependencyEntry = PluginDependency;
-
-// Discriminated union for validation results
-export type ValidationResult =
-  | { status: "success"; config: DependenciesConfig }
-  | { status: "not_found" }
-  | { status: "parse_error"; message: string }
-  | { status: "validation_error"; errors: string[] };
-
-// Alias for config loading (same structure)
-export type ConfigLoadResult = ValidationResult;
-
-// ============================================================================
-// CLI-specific types
-// ============================================================================
-
-export type InitMode = "plugin" | "repo";
+export type Mode = "plugin" | "repo";
 
 export interface InitOptions {
   path: string;
@@ -70,12 +32,24 @@ export interface FileAction {
   reason?: string;
 }
 
-// Hooks.json types
-export interface HooksJson {
-  SessionStart?: HookEntry[];
+// Claude Code hook types (settings.json and plugin hooks.json format)
+export interface ClaudeHookHandler {
+  type: "command";
+  command: string;
+  timeout?: number;
 }
 
-export interface HookEntry {
-  name: string;
-  script: string;
+export interface ClaudeHookMatcherGroup {
+  matcher?: string;
+  hooks: ClaudeHookHandler[];
 }
+
+export type ClaudeHooksConfig = Record<string, ClaudeHookMatcherGroup[]>;
+
+export interface SettingsJson {
+  hooks?: ClaudeHooksConfig;
+  [key: string]: unknown;
+}
+
+// Plugin hooks.json is the same structure as the hooks portion of settings.json
+export type PluginHooksJson = ClaudeHooksConfig;

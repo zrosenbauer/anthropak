@@ -32,14 +32,13 @@
     "build:assets": "./scripts/build-assets.ts",
     "prebuild": "pnpm build:assets",
     "build": "tsdown",
-    "build:bin": "./scripts/build-binaries.ts",
     "dev": "tsdown --watch",
     "typecheck": "tsc --build",
     "clean": "rimraf dist bin src/.generated scripts/*.tsbuildinfo"
   },
   "dependencies": {
+    "@anthropak/utils": "workspace:*",
     "@clack/prompts": "^1.0.0",
-    "confbox": "^0.2.2",
     "es-toolkit": "^1.44.0",
     "ts-pattern": "^5.5.0",
     "yargs": "^17.7.2"

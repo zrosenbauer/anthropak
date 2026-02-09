@@ -45,13 +45,13 @@ anthropak init
 
 This creates:
 
-- `dependencies.yaml` - Declare your plugin's dependencies
+- `.claude-plugin/anthropak.yaml` - Declare your plugin's dependencies (or `.claude/anthropak.yaml` for repos)
 - `hook/anthropak.mjs` - Hook script that checks for missing dependencies
 - Updates `hooks.json` - Registers the hook with Claude Code
 
 ### Declare Dependencies
 
-Edit `dependencies.yaml`:
+Edit `anthropak.yaml`:
 
 ```yaml
 dependencies:
@@ -83,7 +83,7 @@ anthropak update
 ## How It Works
 
 1. Plugin authors run `anthropak init` to set up dependency checking
-2. Authors declare dependencies in `dependencies.yaml`
+2. Authors declare dependencies in `anthropak.yaml`
 3. When Claude Code loads the plugin, the hook script runs
 4. The hook checks Claude's installed plugins registry
 5. Missing dependencies are reported to the user via system message

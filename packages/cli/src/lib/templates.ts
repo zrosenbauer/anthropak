@@ -1,13 +1,44 @@
-// Template and asset access (no template engine needed)
-import { DEPENDENCIES_YAML_TEMPLATE } from "../templates/dependencies-yaml.js";
 import { HOOK_SCRIPT } from "../.generated/index.js";
+import type { ClaudeHookMatcherGroup, Mode } from "../types.js";
 
 /**
- * Returns the dependencies.yaml template
- * No rendering needed - template has no dynamic parts
+ * Returns the anthropak.yaml template
  */
-export function renderDependenciesYaml(): string {
-  return DEPENDENCIES_YAML_TEMPLATE;
+export function renderAnthropakYaml(): string {
+  return `# anthropak.yaml - Anthropak dependency declarations
+# Documentation: https://github.com/zrosenbauer/anthropak#readme
+
+version: 1
+
+# Plugin dependencies (Claude Code plugins)
+plugins:
+  required: []
+  #  - plugin: "example-plugin"              # Required: plugin identifier
+  #    github: "owner/repo"                  # Optional: GitHub repo for installation
+  #    install: "claude plugin add ..."     # Optional: custom install command
+  #    description: "What this plugin does"  # Optional: human-readable description
+
+  optional: []
+  #  - plugin: "example-plugin"
+  #    github: "owner/repo"
+  #    install: "claude plugin add ..."
+  #    description: "What this plugin does"
+
+# CLI tool dependencies
+cli_tools:
+  required: []
+  #  - name: "docker"                           # Required: tool name
+  #    install: "brew install docker"            # Required: install instructions
+
+  optional: []
+  #  - name: "terraform"
+  #    install: "brew install terraform"
+
+# MCP server dependencies (Phase 3 - not yet implemented)
+# mcp:
+#   required: []
+#   optional: []
+`;
 }
 
 /**
@@ -18,17 +49,15 @@ export function getHookScript(): string {
 }
 
 /**
- * Hook entry configuration
+ * Creates a hook matcher group for the given root location.
+ * - "repo": uses $CLAUDE_PROJECT_DIR env var for .claude/settings.json
+ * - "plugin": uses relative path for hooks.json
  */
-export interface HookEntry {
-  name: string;
-  script: string;
-}
+export function createHookEntry(root: Mode): ClaudeHookMatcherGroup {
+  const command =
+    root === "repo" ? '"$CLAUDE_PROJECT_DIR"/.claude/hooks/anthropak.mjs' : "hook/anthropak.mjs";
 
-/**
- * Default hook entry for anthropak
- */
-export const HOOK_ENTRY: HookEntry = {
-  name: "anthropak",
-  script: "hook/anthropak.mjs",
-};
+  return {
+    hooks: [{ type: "command", command }],
+  };
+}

@@ -3,12 +3,12 @@ import * as p from "@clack/prompts";
 import { resolve } from "node:path";
 import { match } from "ts-pattern";
 import type { CommandModule } from "yargs";
-import { loadConfig } from "../lib/config-loader.js";
+import { config } from "@anthropak/utils";
 import type { ValidateOptions } from "../types.js";
 
 const command: CommandModule<object, ValidateOptions> = {
   command: "validate [path]",
-  describe: "Validate dependencies.yaml configuration",
+  describe: "Validate anthropak.yaml configuration",
   builder: (yargs) =>
     yargs.positional("path", {
       describe: "Plugin/project root directory",
@@ -18,14 +18,15 @@ const command: CommandModule<object, ValidateOptions> = {
   handler: async (argv) => {
     const root = resolve(argv.path);
 
-    p.intro("Validating dependencies.yaml");
+    p.intro("Validating anthropak.yaml");
     p.log.info(`Root: ${root}`);
 
-    const result = await loadConfig(root);
+    const configDir = config.resolveConfigDir(root);
+    const result = await config.load(configDir);
 
     match(result)
       .with({ status: "not_found" }, () => {
-        p.log.error("No dependencies.yaml found");
+        p.log.error("No anthropak.yaml found");
         p.log.info("Run `anthropak init` to create one");
         p.outro("Validation failed");
         process.exit(1);
@@ -63,7 +64,7 @@ const command: CommandModule<object, ValidateOptions> = {
           optional: config.mcp?.optional.length ?? 0,
         };
 
-        p.log.success("dependencies.yaml is valid");
+        p.log.success("anthropak.yaml is valid");
         p.log.info("\nSummary:");
 
         if (config.plugins) {

@@ -13,5 +13,5 @@
     "no-console": "off",
     "unicorn/no-empty-file": "off"
   },
-  "ignorePatterns": ["dist/**", "bin/**", "node_modules/**", "**/.generated/**"]
+  "ignorePatterns": ["dist/**", "bin/**", "node_modules/**", "**/.generated/**", ".claude/hooks/**"]
 }

@@ -1,7 +1,6 @@
 {
   "mcpServers": {
     "serena": {
-      "type": "stdio",
       "command": "uvx",
       "args": [
         "--from",
@@ -9,9 +8,10 @@
         "serena",
         "start-mcp-server",
         "--context",
-        "ide-assistant",
-        "--project",
-        "${CLAUDE_PROJECT_ROOT}"
+        "claude-code",
+        "--project-from-cwd",
+        "--open-web-dashboard",
+        "false"
       ]
     }
   }

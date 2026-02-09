@@ -3,14 +3,6 @@ import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 import type { InstalledPluginsRegistry } from "../types.js";
 
-// Config files to search for
-export const CONFIG_FILES = [
-  { name: "dependencies.yaml", format: "yaml" as const },
-  { name: "dependencies.yml", format: "yaml" as const },
-  { name: "dependencies.json", format: "json" as const },
-  { name: "dependencies.jsonc", format: "jsonc" as const },
-];
-
 // Default empty registry
 export const DEFAULT_REGISTRY: InstalledPluginsRegistry = { plugins: {} };
 

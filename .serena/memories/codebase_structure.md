@@ -30,7 +30,7 @@ anthropak/
 │           │   ├── node-version.ts# Node version checks
 │           │   └── templates.ts   # Template rendering (liquidjs)
 │           └── templates/
-│               └── dependencies.yaml.liquid  # Template for dependencies.yaml
+# Note: templates directory was removed; templates are now rendered inline
 ├── scripts/               # Root-level scripts (build-formula.ts)
 ├── turbo.json             # Turborepo config
 ├── lefthook.yml           # Git hooks

@@ -1,28 +1,24 @@
-// Init command - scaffold dependencies.yaml with mode detection and confirmation
+// Init command - scaffold anthropak.yaml with mode detection and confirmation
 import * as p from "@clack/prompts";
 import { resolve, join } from "node:path";
-import { match, P } from "ts-pattern";
+import { match } from "ts-pattern";
 import type { CommandModule } from "yargs";
-import { renderDependenciesYaml, getHookScript } from "../lib/templates.js";
-import { readHooksJson, hookExists, addHookEntry, writeHooksJson } from "../lib/hooks.js";
-import { fileExists, mkdirAsync, writeFileAsync, chmodAsync } from "../lib/fs.js";
-import type { InitOptions, InitMode, FileAction } from "../types.js";
-
-/**
- * Detect init mode based on plugin markers
- */
-async function detectMode(rootDir: string): Promise<InitMode> {
-  const hasHooksJson = await fileExists(join(rootDir, "hooks.json"));
-  const hasClaudePlugin = await fileExists(join(rootDir, ".claude-plugin"));
-  const hasPluginJson = await fileExists(join(rootDir, "plugin.json"));
-
-  return match({ hasHooksJson, hasClaudePlugin, hasPluginJson })
-    .with(
-      P.union({ hasHooksJson: true }, { hasClaudePlugin: true }, { hasPluginJson: true }),
-      () => "plugin" as InitMode,
-    )
-    .otherwise(() => "repo" as InitMode);
-}
+import { renderAnthropakYaml, getHookScript } from "../lib/templates.js";
+import {
+  createClaudePluginHooksClient,
+  createClaudeSettingsClient,
+} from "../lib/claude-configs.js";
+import { resolvePaths, detectMode } from "../lib/paths.js";
+import {
+  resolveHookConfigAction,
+  displayFileActions,
+  confirmOrExit,
+  writeHookConfig,
+  intro,
+  outro,
+} from "../lib/actions.js";
+import fs from "../lib/fs.js";
+import type { InitOptions, Mode, FileAction } from "../types.js";
 
 const command: CommandModule<object, InitOptions> = {
   command: "init [path]",
@@ -49,192 +45,137 @@ const command: CommandModule<object, InitOptions> = {
   handler: async (argv) => {
     const root = resolve(argv.path);
 
-    // Handle intro based on --yes mode
-    match(argv.yes)
-      .with(true, () => p.log.info("anthropak init"))
-      .with(false, () => p.intro("anthropak init"))
-      .exhaustive();
+    intro(argv.yes, "anthropak init");
 
     // Detect mode
     const detectedMode = await detectMode(root);
     p.log.info(`Detected mode: ${detectedMode}`);
 
     // Confirm mode (skip if --yes)
-    const useDetectedMode = match(argv.yes)
-      .with(true, () => true)
-      .with(false, async () => {
-        const result = await p.confirm({
-          message: `Use ${detectedMode} mode?`,
-          initialValue: true,
-        });
+    let mode: Mode = detectedMode;
+    if (!argv.yes) {
+      const result = await p.confirm({
+        message: `Use ${detectedMode} mode?`,
+        initialValue: true,
+      });
 
-        if (p.isCancel(result)) {
-          p.cancel("Operation cancelled");
-          process.exit(0);
-        }
+      if (p.isCancel(result)) {
+        p.cancel("Operation cancelled");
+        process.exit(0);
+      }
 
-        return result;
-      })
-      .exhaustive();
+      if (!result) {
+        mode = detectedMode === "plugin" ? "repo" : "plugin";
+      }
+    }
 
-    const mode: InitMode = match(await useDetectedMode)
-      .with(true, () => detectedMode)
-      .with(false, () =>
-        match(detectedMode)
-          .with("plugin", () => "repo" as InitMode)
-          .with("repo", () => "plugin" as InitMode)
-          .exhaustive(),
-      )
-      .exhaustive();
+    p.log.info(argv.yes ? `Mode: ${mode} (auto)` : `Mode: ${mode}`);
 
-    match(argv.yes)
-      .with(true, () => p.log.info(`Mode: ${mode} (auto)`))
-      .with(false, () => p.log.info(`Mode: ${mode}`))
-      .exhaustive();
+    // Create cached file managers
+    const settingsFile = createClaudeSettingsClient({
+      path: join(root, ".claude", "settings.json"),
+    });
+    const hooksFile = createClaudePluginHooksClient({ path: join(root, "hooks.json") });
+
+    const paths = resolvePaths(root, mode);
 
     // Build file action list
     const fileActions: FileAction[] = [];
 
-    const depsFile = join(root, "dependencies.yaml");
-    const depsExists = await fileExists(depsFile);
+    const depsExists = await fs.exists(paths.configFilePath);
     fileActions.push(
       match({ exists: depsExists, force: argv.force })
         .with({ exists: false }, () => ({
-          path: "dependencies.yaml",
+          path: paths.configDisplayPath,
           action: "create" as const,
         }))
         .with({ exists: true, force: true }, () => ({
-          path: "dependencies.yaml",
+          path: paths.configDisplayPath,
           action: "update" as const,
           reason: "overwriting with --force",
         }))
         .with({ exists: true, force: false }, () => ({
-          path: "dependencies.yaml",
+          path: paths.configDisplayPath,
           action: "skip" as const,
           reason: "already exists",
         }))
         .exhaustive(),
     );
 
-    const hookScript = join(root, "hook", "anthropak.mjs");
-    const hookScriptExists = await fileExists(hookScript);
+    const hookScriptExists = await fs.exists(paths.hookScriptPath);
     fileActions.push({
-      path: "hook/anthropak.mjs",
-      action: match(hookScriptExists)
-        .with(true, () => "update" as const)
-        .with(false, () => "create" as const)
-        .exhaustive(),
+      path: paths.hookScriptDisplayPath,
+      action: hookScriptExists ? "update" : "create",
     });
 
-    const hooksJsonPath = join(root, "hooks.json");
-    const hooksJsonExists = await fileExists(hooksJsonPath);
-    const hooksJson = await readHooksJson(hooksJsonPath);
-    const hasHook = hookExists(hooksJson);
-    fileActions.push(
-      match({ exists: hooksJsonExists, hasHook })
-        .with({ hasHook: true }, () => ({
-          path: "hooks.json",
-          action: "skip" as const,
-          reason: "hook already configured",
-        }))
-        .with({ exists: true, hasHook: false }, () => ({
-          path: "hooks.json",
-          action: "update" as const,
-        }))
-        .with({ exists: false }, () => ({
-          path: "hooks.json",
-          action: "create" as const,
-        }))
-        .exhaustive(),
+    const hookConfigAction = await resolveHookConfigAction(
+      mode,
+      settingsFile,
+      hooksFile,
+      root,
+      paths.hookConfigDisplayPath,
+      "hook already configured",
     );
+    fileActions.push(hookConfigAction);
 
     // Show file summary
     p.log.info("\nFiles to be modified:");
-    fileActions.forEach((action) => {
-      const reason = match(action.reason)
-        .with(P.string, (r) => ` (${r})`)
-        .otherwise(() => "");
-      match(action.action)
-        .with("create", () => p.log.step(`  [CREATE] ${action.path}${reason}`))
-        .with("update", () => p.log.step(`  [UPDATE] ${action.path}${reason}`))
-        .with("skip", () => p.log.step(`  [SKIP]   ${action.path}${reason}`))
-        .exhaustive();
-    });
+    displayFileActions(fileActions);
 
-    // Confirm before writing (skip if --yes)
-    const proceed = match(argv.yes)
-      .with(true, () => true)
-      .with(false, async () => {
-        const result = await p.confirm({
-          message: "Proceed?",
-          initialValue: false,
-        });
-
-        if (p.isCancel(result)) {
-          p.cancel("Operation cancelled");
-          process.exit(0);
-        }
-
-        return result;
-      })
-      .exhaustive();
-
-    if (!(await proceed)) {
-      p.cancel("Operation cancelled");
-      process.exit(0);
-    }
+    // Confirm before writing
+    await confirmOrExit(argv.yes);
 
     // Write files
     const spinner = p.spinner();
     spinner.start("Writing files...");
 
     // Create hook directory
-    const [mkdirError] = await mkdirAsync(join(root, "hook"));
+    const [mkdirError] = await fs.mkdir(paths.hookDirPath);
     if (mkdirError) {
       spinner.stop(`Failed to create hook directory: ${mkdirError.message}`);
       process.exit(1);
     }
 
-    // Write dependencies.yaml if needed
-    const depsAction = fileActions.find((a) => a.path === "dependencies.yaml")?.action;
+    // Create config directory
+    const configDirPath = join(root, paths.configDir);
+    const [configDirError] = await fs.mkdir(configDirPath);
+    if (configDirError) {
+      spinner.stop(`Failed to create config directory: ${configDirError.message}`);
+      process.exit(1);
+    }
+
+    // Write anthropak.yaml if needed
+    const depsAction = fileActions.find((a) => a.path === paths.configDisplayPath)?.action;
     if (depsAction === "create" || depsAction === "update") {
-      const template = renderDependenciesYaml();
-      const [writeError] = await writeFileAsync(depsFile, template);
+      const template = renderAnthropakYaml();
+      const [writeError] = await fs.writeFile(paths.configFilePath, template);
       if (writeError) {
-        spinner.stop(`Failed to write dependencies.yaml: ${writeError.message}`);
+        spinner.stop(`Failed to write anthropak.yaml: ${writeError.message}`);
         process.exit(1);
       }
     }
 
     // Write hook script
     const hookScriptContent = getHookScript();
-    const [hookWriteError] = await writeFileAsync(hookScript, hookScriptContent);
+    const [hookWriteError] = await fs.writeFile(paths.hookScriptPath, hookScriptContent);
     if (hookWriteError) {
       spinner.stop(`Failed to write hook script: ${hookWriteError.message}`);
       process.exit(1);
     }
 
     // Make hook executable
-    const [chmodError] = await chmodAsync(hookScript, 0o755);
+    const [chmodError] = await fs.chmod(paths.hookScriptPath, 0o755);
     if (chmodError) {
       spinner.stop(`Failed to make hook executable: ${chmodError.message}`);
       process.exit(1);
     }
 
-    // Update hooks.json if needed
-    const hooksAction = fileActions.find((a) => a.path === "hooks.json")?.action;
-    if (hooksAction === "create" || hooksAction === "update") {
-      const updatedHooks = addHookEntry(hooksJson);
-      await writeHooksJson(hooksJsonPath, updatedHooks);
-    }
+    // Update hook config if needed
+    await writeHookConfig(mode, settingsFile, hooksFile, fileActions, paths.hookConfigDisplayPath);
 
     spinner.stop("Files written successfully");
 
-    // Handle outro based on --yes mode
-    match(argv.yes)
-      .with(true, () => p.log.info("Edit dependencies.yaml to declare your dependencies."))
-      .with(false, () => p.outro("Edit dependencies.yaml to declare your dependencies."))
-      .exhaustive();
+    outro(argv.yes, `Edit ${paths.configDisplayPath} to declare your dependencies.`);
   },
 };
 

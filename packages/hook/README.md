@@ -23,7 +23,7 @@ anthropak init
 
 ## Usage
 
-The hook is automatically invoked by Claude Code when a plugin is loaded. It reads the `dependencies.yaml` file in the plugin root and checks each dependency against Claude's installed plugins registry.
+The hook is automatically invoked by Claude Code when a plugin is loaded. It reads the `anthropak.yaml` file from `.claude-plugin/` (for plugins) or `.claude/` (for repos) and checks each dependency against Claude's installed plugins registry.
 
 ### Output
 
@@ -41,7 +41,7 @@ When dependencies are missing, the hook returns a system message to Claude Code:
 
 ## How It Works
 
-1. Reads `dependencies.yaml` from the plugin root
+1. Reads `anthropak.yaml` from `.claude-plugin/` or `.claude/`
 2. Validates the configuration structure
 3. Loads Claude's installed plugins registry (`~/.claude/plugins/installed.json`)
 4. Compares declared dependencies against installed plugins
@@ -49,7 +49,7 @@ When dependencies are missing, the hook returns a system message to Claude Code:
 
 ### Configuration Format
 
-The hook expects a `dependencies.yaml` file with this structure:
+The hook expects an `anthropak.yaml` file with this structure:
 
 ```yaml
 dependencies:

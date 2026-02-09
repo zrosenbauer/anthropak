@@ -14,7 +14,6 @@ export function checkPlugins(
   registry: InstalledPluginsRegistry,
   projectDir: string,
 ): CheckResult {
-  // If no plugins section, return empty result
   if (!config.plugins) {
     return { missingRequired: [], missingOptional: [] };
   }

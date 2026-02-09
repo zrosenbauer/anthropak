@@ -40,7 +40,7 @@ The `src/.generated/` directory contains auto-generated TypeScript files with em
 
 When Claude Code loads a plugin with anthropak configured:
 
-1. Hook reads `dependencies.yaml` from the plugin root
+1. Hook reads `anthropak.yaml` from `.claude-plugin/` or `.claude/`
 2. Validates config structure
 3. Loads Claude's `installed_plugins.json` registry
 4. Checks if declared dependencies are installed (global or project-scoped)
@@ -48,7 +48,7 @@ When Claude Code loads a plugin with anthropak configured:
 
 ### CLI Commands
 
-- `anthropak init [path]` - Scaffolds `dependencies.yaml`, `hook/anthropak.mjs`, and updates `hooks.json`
+- `anthropak init [path]` - Scaffolds `anthropak.yaml`, `hook/anthropak.mjs`, and updates `hooks.json`
 - `anthropak update [path]` - Updates the hook script to latest version
 
 ## Code Conventions

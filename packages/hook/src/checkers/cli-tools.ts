@@ -18,7 +18,6 @@ export async function checkCliTools(config: DependenciesConfig): Promise<CliTool
   const required = config.cli_tools.required as CliToolDependency[];
   const optional = config.cli_tools.optional as CliToolDependency[];
 
-  // Run all tool checks in parallel
   const allTools = [...required, ...optional];
   const checkResults = await Promise.all(
     allTools.map(async (tool) => ({
@@ -27,13 +26,11 @@ export async function checkCliTools(config: DependenciesConfig): Promise<CliTool
     })),
   );
 
-  // Build map of tool existence
   const existsMap = new Map<string, boolean>();
   for (const result of checkResults) {
     existsMap.set(result.name, result.exists);
   }
 
-  // Filter missing tools
   const missingRequired = required.filter((tool) => !existsMap.get(tool.name));
   const missingOptional = optional.filter((tool) => !existsMap.get(tool.name));
 

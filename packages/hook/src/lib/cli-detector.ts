@@ -1,15 +1,14 @@
 import { execFile } from "node:child_process";
 import { attemptAsync } from "es-toolkit";
-import { match } from "ts-pattern";
 
 /**
  * Returns the appropriate command and args for detecting tool existence
  * Uses 'where' on Windows, 'which' on Unix-like systems
  */
 export function getDetectionCommand(toolName: string): { command: string; args: string[] } {
-  return match(process.platform)
-    .with("win32", () => ({ command: "where", args: [toolName] }))
-    .otherwise(() => ({ command: "which", args: [toolName] }));
+  return process.platform === "win32"
+    ? { command: "where", args: [toolName] }
+    : { command: "which", args: [toolName] };
 }
 
 /**
@@ -27,15 +26,10 @@ export async function checkToolExists(toolName: string): Promise<boolean> {
 
       execFile(command, args, (err) => {
         clearTimeout(timeout);
-        const exists = match(err)
-          .with(null, () => true)
-          .otherwise(() => false);
-        resolve(exists);
+        resolve(!err);
       });
     });
   });
 
-  return match(error)
-    .with(null, () => result!)
-    .otherwise(() => false);
+  return error ? false : result!;
 }

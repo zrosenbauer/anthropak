@@ -1,5 +1,5 @@
 import { defineConfig } from "tsdown";
-import { cpSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
+import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
 
 export default defineConfig({
@@ -14,9 +14,6 @@ export default defineConfig({
     entryFileNames: "[name]",
   },
   onSuccess: () => {
-    cpSync("src/templates", "dist/templates", { recursive: true });
-    console.log("Copied templates to dist/");
-
     const hookDir = join("..", "hook", "dist");
     const hookScript = readFileSync(join(hookDir, "anthropak.mjs"), "utf8");
 

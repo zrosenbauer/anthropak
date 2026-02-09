@@ -1,8 +1,7 @@
-// Default command - auto-detect and delegate to init or update
 import { join, resolve } from "node:path";
-import { match } from "ts-pattern";
 import type { CommandModule } from "yargs";
-import { fileExists } from "../lib/fs.js";
+import { config } from "@anthropak/utils";
+import fs from "../lib/fs.js";
 import init from "./init.js";
 import update from "./update.js";
 
@@ -12,14 +11,14 @@ interface DefaultArgs {
 
 /**
  * Check if anthropak is initialized in the given directory
+ * Checks for anthropak.yaml in the resolved config dir (.claude-plugin/ or .claude/)
  */
 async function isInitialized(root: string): Promise<boolean> {
-  const hooksDir = await fileExists(join(root, "hook"));
-  const depsFile = await fileExists(join(root, "dependencies.yaml"));
-  return hooksDir && depsFile;
+  const configDir = config.resolveConfigDir(root);
+  return fs.exists(join(configDir, "anthropak.yaml"));
 }
 
-const command: CommandModule<object, DefaultArgs> = {
+export default {
   command: "$0 [path]",
   describe: false, // hidden from help
   builder: (yargs) =>
@@ -32,15 +31,10 @@ const command: CommandModule<object, DefaultArgs> = {
     const root = resolve(argv.path);
     const initialized = await isInitialized(root);
 
-    match(initialized)
-      .with(true, () => {
-        update.handler({ ...argv, yes: false, _: [], $0: "" });
-      })
-      .with(false, () => {
-        init.handler({ ...argv, force: false, yes: false, _: [], $0: "" });
-      })
-      .exhaustive();
+    if (initialized) {
+      update.handler({ ...argv, yes: false, _: [], $0: "" });
+    } else {
+      init.handler({ ...argv, force: false, yes: false, _: [], $0: "" });
+    }
   },
-};
-
-export default command;
+} satisfies CommandModule<object, DefaultArgs>;

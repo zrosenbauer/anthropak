@@ -32,12 +32,12 @@ importers:
 
   packages/cli:
     dependencies:
+      '@anthropak/utils':
+        specifier: workspace:*
+        version: link:../utils
       '@clack/prompts':
         specifier: ^1.0.0
         version: 1.0.0
-      confbox:
-        specifier: ^0.2.2
-        version: 0.2.2
       es-toolkit:
         specifier: ^1.44.0
         version: 1.44.0
@@ -66,12 +66,31 @@ importers:
 
   packages/hook:
     dependencies:
-      confbox:
-        specifier: ^0.2.2
-        version: 0.2.2
+      '@anthropak/utils':
+        specifier: workspace:*
+        version: link:../utils
       es-toolkit:
         specifier: ^1.44.0
         version: 1.44.0
+      ts-pattern:
+        specifier: ^5.5.0
+        version: 5.9.0
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.10
+        version: 24.10.10
+      tsdown:
+        specifier: ^0.9.3
+        version: 0.9.9(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+
+  packages/utils:
+    dependencies:
+      confbox:
+        specifier: ^0.2.2
+        version: 0.2.2
       ts-pattern:
         specifier: ^5.5.0
         version: 5.9.0
